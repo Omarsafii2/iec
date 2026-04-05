@@ -1,0 +1,216 @@
+/* Hero Slider - full-width section */
+.hero-slider {
+  position: relative;
+  width: 100%;
+  min-height: 420px;
+  overflow: hidden;
+  /* White box shadow at bottom - soft, subtle transition */
+  box-shadow: 0 10px 24px rgba(255, 255, 255, 0.08);
+}
+
+.hero-slider__swiper {
+  width: 100%;
+  height: 662.722px;
+}
+
+.hero-slider__slide {
+  position: relative;
+  width: 100%;
+  min-height: 420px;
+  display: flex;
+  align-items: center;
+}
+
+/* Background Image */
+.hero-slider__bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  z-index: 0;
+}
+
+/* Overlay - darker left to lighter right */
+.hero-slider__overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.70) 0%,
+    rgba(0, 0, 0, 0.50) 50%,
+    rgba(0, 0, 0, 0.30) 100%
+  );
+  z-index: 1;
+}
+
+/* Bottom white gradient fade - soft luminous transition to content below */
+.hero-slider__bottom-fade {
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 30%;
+  background: linear-gradient(
+    to top,
+    #fff 0%,
+    rgba(255, 255, 255, 0.85) 10%,
+    rgba(255, 255, 255, 0.35) 40%,
+    rgba(255, 255, 255, 0) 90%
+  );
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Content container - aligns with site layout */
+.hero-slider__container {
+  position: relative;
+  z-index: 2;
+  /* max-width: 1200px; */
+  margin: 0 auto;
+  padding: 0 100px;
+  width: 100%;
+}
+
+/* Content - left aligned */
+.hero-slider__content {
+  max-width: 560px;
+  padding: 3rem 0;
+}
+
+/* Category badge */
+.hero-slider__category {
+  display: inline-block;
+  background: var(--color-main, #9e4b3c);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.4rem 1rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Title / Headline */
+.hero-slider__title {
+  color: #fff;
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Description */
+.hero-slider__description {
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 1rem;
+  line-height: 1.65;
+  margin-bottom: 1.5rem;
+  max-width: 520px;
+}
+
+/* CTA Button */
+.hero-slider__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--color-main, #9e4b3c);
+  color: #fff;
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 0.6rem 1.25rem;
+  border-radius: 4px;
+  transition: background 0.2s, transform 0.2s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.hero-slider__cta:hover {
+  background: #8a4234;
+  transform: translateY(-1px);
+}
+
+/* Navigation arrows - circular, white border */
+.hero-slider__nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  background: rgba(0, 0, 0, 0.2);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.hero-slider__nav:hover {
+  background: rgba(0, 0, 0, 0.4);
+  border-color: #fff;
+}
+
+.hero-slider__nav--prev {
+  left: 1.5rem;
+}
+
+.hero-slider__nav--next {
+  right: 1.5rem;
+}
+
+/* Hide default Swiper nav, we use custom */
+.hero-slider__swiper .swiper-button-prev,
+.hero-slider__swiper .swiper-button-next {
+  display: none;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .hero-slider__content {
+    max-width: 65%;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-slider,
+  .hero-slider__slide {
+    min-height: 360px;
+  }
+
+  .hero-slider__content {
+    max-width: 90%;
+    padding: 2rem 1.5rem;
+  }
+
+  .hero-slider__title {
+    font-size: 1.4rem;
+  }
+
+  .hero-slider__description {
+    font-size: 0.9rem;
+  }
+
+  .hero-slider__nav {
+    width: 40px;
+    height: 40px;
+  }
+
+  .hero-slider__nav--prev {
+    left: 1rem;
+  }
+
+  .hero-slider__nav--next {
+    right: 1rem;
+  }
+}

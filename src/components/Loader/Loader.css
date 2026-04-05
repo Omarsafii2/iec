@@ -1,0 +1,10 @@
+.loader-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.loader-wrapper--fullpage {
+    min-height: 100dvh;
+}

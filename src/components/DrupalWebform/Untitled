@@ -1,0 +1,66 @@
+You are working in a React project. Convert the existing Contact form to be generated dynamically from Drupal Webform REST “elements” response.
+
+Backend:
+- Elements schema endpoint (GET):
+  http://jepa-demo.com.dedi5536.your-server.de/webform_rest/contact_us/elements?_format=json
+- Submit endpoint (POST):
+  http://jepa-demo.com.dedi5536.your-server.de/webform_rest/submit?_format=json
+  Body format:
+  {
+    "webform_id": "contact_us",
+    "data": { "<key>": "<value>", ... }
+  }
+
+Goal:
+1) Create a reusable React component: `DrupalWebform.jsx`
+   - Props: `webformId` (string), `baseUrl` (string)
+   - Default usage: <DrupalWebform baseUrl="http://jepa-demo.com.dedi5536.your-server.de" webformId="contact_us" />
+
+2) On mount:
+   - Fetch elements JSON from:
+     `${baseUrl}/webform_rest/${webformId}/elements?_format=json`
+   - The response is an object where each top-level key is an element key (e.g., first_name, last_name, email, subject, message, actions, actions_01).
+   - Ignore non-input/control elements:
+     - keys like "actions", "actions_01", anything where `#type` is "actions" or "webform_actions"
+     - any element where `#webform_element` is not true
+   - Build a render list for only the input fields.
+
+3) Render UI fields based on `#type`:
+   - "#type": "textfield" -> <input type="text" />
+   - "#type": "email" -> <input type="email" />
+   - "#type": "textarea" -> <textarea />
+   - Use:
+     - label from `#title`
+     - placeholder from `#placeholder` if present
+     - required from `#required`
+     - show required error message from `#required_error` on validation
+   - Use controlled state: `formData` object keyed by webform field key, and `errors` object keyed by the same.
+   - Initial formData values should be empty strings.
+
+4) Client-side validation (before submit):
+   - For each required field:
+     - if empty -> set error message to `#required_error` if available, else `${label} is required`
+   - For email:
+     - validate basic email format; if invalid -> use `#required_error` or "Invalid email"
+   - Do not submit if errors exist.
+
+5) Submit:
+   - POST to `${baseUrl}/webform_rest/submit?_format=json`
+   - Headers: { "Content-Type": "application/json" }
+   - Body: { webform_id: webformId, data: formData }
+   - Handle responses:
+     - On success: show a success message and reset the form.
+     - On error: show an error message from response if available.
+
+6) Styling:
+   - Use existing CSS approach (className-based). Create minimal classes:
+     - webform, webform__field, webform__label, webform__input, webform__textarea, webform__error, webform__actions, webform__btn
+   - Do NOT hardcode field names; everything must come from the fetched schema.
+
+7) Create a page/component `ContactUs.jsx` that uses `DrupalWebform` and replaces any hardcoded contact form.
+
+Constraints:
+- Use fetch API (no axios).
+- Keep code clean and production-ready.
+- Provide the full code for `DrupalWebform.jsx`, `ContactUs.jsx`, and a small CSS file `DrupalWebform.css`.
+- Ensure the component works with the provided elements JSON for contact_us.
