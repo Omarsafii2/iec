@@ -1,8 +1,6 @@
 import { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import AOS from 'aos';
-import PageTransition from './components/layout/PageTransition';
-import Home from './pages/home/Home';
 
 
 function AOSRefresh() {
@@ -28,7 +26,6 @@ function AppContent() {
       <Header />
       <Routes location={location}>
         <Route element={<PageTransition />}>
-          <Route path="/" element={<Home />} />
         </Route>
       </Routes>
       <Footer />
