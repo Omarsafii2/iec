@@ -1,0 +1,27 @@
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@200;300;400;500;700;800;900&display=swap');
+
+:root {
+  --font-family: 'Tajawal', system-ui, sans-serif;
+
+  /* Browns & sand palette */
+  --color-primary: #564636;
+  --color-sand: #d4c5a0;
+  --color-olive: #897d56;
+
+  --color-background: #564636;
+  --color-foreground: #564636;
+
+  --surface-olive-soft: rgba(137, 125, 86, 0.1);
+
+  /* Full pill; very large px caps in the spec — same visual as 9999px */
+  --border-radius-full: 21586800px;
+}
+
+html {
+  font-family: var(--font-family);
+  direction: rtl;
+}
+
+body {
+  direction: rtl;
+}
