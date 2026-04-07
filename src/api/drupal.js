@@ -1,49 +1,29 @@
-/**
- * Drupal JSON:API helper for Contact Us page.
- * Uses fetch (no axios). Base URL for JEPA demo site.
- *
- * Final request URL when include works:
- * GET {BASE_URL}/jsonapi/node/contact_us?include=field_contact_us_cards,field_contact_us_cards.field_icon,field_contact_us_cards.field_icon.field_media_image&sort=-changed&page[limit]=1
- *
- * If field names differ, adjust include chain:
- * - Node paragraphs: field_contact_us_cards (confirmed)
- * - Paragraph icon: field_icon (TRY) -> field_media -> field_media_image
- * - Media image field: field_media_image (common for media--image)
- */
+// src/api/drupal.js  ← create this file ONCE, never touch again
 
-const BASE_URL = 'http://jepa-demo.com.dedi5536.your-server.de';
+export const DRUPAL_JSONAPI_ORIGIN = "http://backend.iec-new-2026.com.dedi8785.your-server.de";
 
-/**
- * Build full URL from path. Path should start with / (e.g. /jsonapi/node/contact_us).
- * @param {string} path - API path
- * @returns {string} Full URL
- */
-export function buildUrl(path) {
-    const clean = path.startsWith('/') ? path : `/${path}`;
-    return `${BASE_URL}${clean}`;
+const BASE_URL = DRUPAL_JSONAPI_ORIGIN;
+
+export async function fetchDrupalContent({
+  contentType,          // required  — "news", "events", "academic" …
+  uuid    = null,       // optional  — fetch single node by UUID
+  limit   = 10,         // optional  — number of items
+  filters = {},         // optional  — { "filter[status]": 1 }
+  include = [],         // optional  — ["field_media_image"]
+}) {
+  // auto-builds: /jsonapi/node/{contentType} or /jsonapi/node/{contentType}/{uuid}
+  let url = `${BASE_URL}/jsonapi/node/${contentType}`;
+  if (uuid) url += `/${uuid}`;
+
+  const params = new URLSearchParams();
+  if (!uuid) params.set("page[limit]", limit);
+  if (include.length) params.set("include", include.join(","));
+  for (const [k, v] of Object.entries(filters)) params.set(k, v);
+
+  const query = params.toString();
+  if (query) url += `?${query}`;
+
+  const res = await fetch(url, { headers: { Accept: "application/vnd.api+json" } });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
 }
-
-/**
- * Fetch URL and parse JSON.
- * @param {string} url - Full URL (use buildUrl for paths)
- * @param {RequestInit} [opts] - fetch options (method, headers, etc.)
- * @returns {Promise<object>} Parsed JSON
- */
-export async function fetchJson(url, opts = {}) {
-    const options = {
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            ...opts.headers
-        },
-        ...opts
-    };
-    const res = await fetch(url, options);
-    if (!res.ok) {
-        const text = await res.text();
-        throw new Error(`HTTP ${res.status}: ${text.slice(0, 200)}`);
-    }
-    return res.json();
-}
-
-export { BASE_URL };
