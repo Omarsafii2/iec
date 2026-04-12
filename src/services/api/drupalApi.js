@@ -1,195 +1,423 @@
-import axios from 'axios';
+import { drupalApi, DRUPAL_BASE_URL } from './axios.config';
 
-// Configure your Drupal backend URL
-const DRUPAL_BASE_URL = import.meta.env.VITE_DRUPAL_URL || 'http://localhost:8000';
+/**
+ * imageFields: array of image field configs
+ * [
+ *   { fieldName: 'field_image',       mode: 'file' },
+ *   { fieldName: 'field_media_image', mode: 'media', mediaSourceField: 'field_media_image' },
+ * ]
+ */
 
-// Create axios instance with default config
-const drupalApi = axios.create({
-  baseURL: DRUPAL_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
-  },
-});
+// ─── Internal helpers ─────────────────────────────────────────────────────────
 
-// Add request interceptor for authentication if needed
-drupalApi.interceptors.request.use(
-  (config) => {
-    // Add authentication token if available
-    const token = localStorage.getItem('drupal_token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+const resolveImageFields = (nodes, included = [], imageFields = []) => {
+  const mediaById = {};
+  const filesById = {};
+
+  included.forEach((item) => {
+    if (item.type === 'file--file') filesById[item.id] = item;
+    if (item.type.startsWith('media--')) mediaById[item.id] = item;
+  });
+
+  const resolveRef = (ref, mode, mediaSourceField) => {
+    if (!ref) return null;
+
+    if (mode === 'file') {
+      return filesById[ref.id] ?? null;
     }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
 
-// Add response interceptor for error handling
-drupalApi.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    console.error('API Error:', error.response || error.message);
-    return Promise.reject(error);
-  }
-);
-
-// API Functions
-
-/**
- * Fetch all news articles from Drupal
- * Endpoint example: /jsonapi/node/article
- */
-export const fetchNews = async () => {
-  try {
-    // IMPORTANT: Add ?include=field_image to get image data
-    const response = await drupalApi.get('/jsonapi/node/news?include=field_image');
-    console.log('API Response:', response.data); // Debug log
-
-    // Transform Drupal JSON:API response to simpler format
-    return response.data.data.map(item => {
-      // Get  image URL
-      let imageUrl = 'https://placehold.co/400x300/4A90E2/ffffff?text=No+Image';
-
-      // Check if image relationship exists
-      if (item.relationships?.field_image?.data) {
-        const imageId = item.relationships.field_image.data.id;
-
-        // Find the image file in included data
-        if (response.data.included) {
-          const imageFile = response.data.included.find(
-            included => included.type === 'file--file' && included.id === imageId
-          );
-
-          if (imageFile?.attributes?.uri?.url) {
-            imageUrl = `${DRUPAL_BASE_URL}${imageFile.attributes.uri.url}`;
-          }
-        }
-      }
-
-      // Get excerpt from body
-      let excerpt = '';
-      if (item.attributes.body) {
-        if (item.attributes.body.summary) {
-          excerpt = item.attributes.body.summary;
-        } else if (item.attributes.body.value) {
-          // Strip HTML and get first 150 chars
-          excerpt = item.attributes.body.value.replace(/<[^>]*>/g, '').substring(0, 150) + '...';
-        }
-      }
-
-      console.log('Article:', item.attributes.title, 'Image URL:', imageUrl); // Debug log
-
+    if (mode === 'media') {
+      const media = mediaById[ref.id];
+      if (!media) return null;
+      const fileRef = media.relationships?.[mediaSourceField]?.data;
       return {
-        id: item.id,
-        title: item.attributes.title,
-        excerpt: excerpt,
-        image: imageUrl,
-        date: item.attributes.created,
-        author: item.attributes.uid?.display_name || 'Admin'
+        ...media,
+        file: fileRef ? filesById[fileRef.id] ?? null : null,
       };
-    });
-  } catch (error) {
-    console.error('Error fetching news:', error);
-    throw error;
-  }
-};
+    }
 
+    return null;
+  };
 
-/**
- * Fetch single news article by ID
- */
-export const fetchNewsById = async (id) => {
-  try {
-const response = await drupalApi.get(`/jsonapi/node/news/${id}`);
-    const item = response.data.data;
-    return {
-      id: item.id,
-      title: item.attributes.title,
-      body: item.attributes.body?.value,
-      image: item.relationships.field_image?.data
-        ? `${DRUPAL_BASE_URL}${item.relationships.field_image.data.attributes.uri.url}`
-        : null,
-      date: item.attributes.created,
-      author: item.relationships.uid?.data?.attributes?.display_name || 'Anonymous'
-    };
-  } catch (error) {
-    console.error('Error fetching news by ID:', error);
-    throw error;
-  }
-};
+  return nodes.map((node) => {
+    const resolved = {};
 
-/**
- * Fetch slider/banner content from Drupal
- * Endpoint example: /jsonapi/node/slider
- */
+    imageFields.forEach(({ fieldName, mode = 'file', mediaSourceField = 'field_media_image' }) => {
+      const rel = node.relationships?.[fieldName]?.data;
 
-
-/**
- * Submit contact form to Drupal
- * Endpoint example: /webform_rest/submit
- */
-export const submitContactForm = async (formData) => {
-  try {
-    const response = await drupalApi.post('/webform_rest/contact/submit', {
-      webform_id: 'contact',
-      name: formData.name,
-      email: formData.email,
-      subject: formData.subject,
-      message: formData.message
-    });
-    return response.data;
-  } catch (error) {
-    console.error('Error submitting contact form:', error);
-    throw error;
-  }
-};
-
-/**
- * Fetch page content by path
- * Endpoint example: /jsonapi/node/page
- */
-export const fetchPageContent = async (path) => {
-  try {
-    const response = await drupalApi.get(`/jsonapi/node/page`, {
-      params: {
-        'filter[path.alias]': path
+      if (!Array.isArray(rel)) {
+        resolved[`${fieldName}_resolved`] = resolveRef(rel, mode, mediaSourceField);
+      } else {
+        resolved[`${fieldName}_resolved`] = rel
+          .map((r) => resolveRef(r, mode, mediaSourceField))
+          .filter(Boolean);
       }
     });
-    const item = response.data.data[0];
-    if (!item) return null;
 
-    return {
-      id: item.id,
-      title: item.attributes.title,
-      body: item.attributes.body?.value,
-      created: item.attributes.created
-    };
-  } catch (error) {
-    console.error('Error fetching page content:', error);
-    throw error;
-  }
+    return { ...node, ...resolved };
+  });
 };
+
+const buildInclude = (imageFields = []) =>
+  imageFields
+    .flatMap(({ fieldName, mode, mediaSourceField = 'field_media_image' }) =>
+      mode === 'media'
+        ? [`${fieldName}`, `${fieldName}.${mediaSourceField}`]
+        : [`${fieldName}`]
+    )
+    .join(',');
+
+const buildPool = (included) => {
+  const byId  = {};
+  const files = {};
+  const media = {};
+  const terms = {};
+
+  included.forEach((item) => {
+    byId[item.id] = item;
+    if (item.type === 'file--file')                  files[item.id] = item;
+    else if (item.type.startsWith('media--'))         media[item.id] = item;
+    else if (item.type.startsWith('taxonomy_term--')) terms[item.id] = item;
+  });
+
+  return { byId, files, media, terms };
+};
+
+const buildFullInclude = ({ imageFields = [], documentFields = [], taxonomyFields = [], paragraphField = 'field_paragraphs', paragraphFields = {} }) => {
+  const paths = new Set();
+
+  const addImagePaths = (prefix, fields) => {
+    fields.forEach(({ fieldName, mode, mediaSourceField = 'field_media_image' }) => {
+      const p = prefix ? `${prefix}.${fieldName}` : fieldName;
+      paths.add(p);
+      if (mode === 'media') paths.add(`${p}.${mediaSourceField}`);
+    });
+  };
+
+  const addDocumentPaths = (prefix, fields) => {
+    fields.forEach(({ fieldName, mediaSourceField = 'field_media_file' }) => {
+      const p = prefix ? `${prefix}.${fieldName}` : fieldName;
+      paths.add(p);
+      paths.add(`${p}.${mediaSourceField}`);
+    });
+  };
+
+  const addTaxonomyPaths = (prefix, fields) => {
+    fields.forEach(({ fieldName, termImageFields = [], termDocumentFields = [] }) => {
+      const p = prefix ? `${prefix}.${fieldName}` : fieldName;
+      paths.add(p);
+      addImagePaths(p, termImageFields);
+      addDocumentPaths(p, termDocumentFields);
+    });
+  };
+
+  addImagePaths('', imageFields);
+  addDocumentPaths('', documentFields);
+  addTaxonomyPaths('', taxonomyFields);
+
+  if (paragraphField) {
+    paths.add(paragraphField);
+    Object.values(paragraphFields).forEach((cfg) => {
+      addImagePaths(paragraphField, cfg.imageFields    ?? []);
+      addDocumentPaths(paragraphField, cfg.documentFields ?? []);
+      addTaxonomyPaths(paragraphField, cfg.taxonomyFields ?? []);
+    });
+  }
+
+  return [...paths].join(',');
+};
+
+const resolveMediaRef = (ref, pool, mode, mediaSourceField) => {
+  if (!ref) return null;
+  if (mode === 'file') return pool.files[ref.id] ?? null;
+  if (mode === 'media') {
+    const mediaEntity = pool.media[ref.id];
+    if (!mediaEntity) return null;
+    const fileRef = mediaEntity.relationships?.[mediaSourceField]?.data;
+    return { ...mediaEntity, file: fileRef ? pool.files[fileRef.id] ?? null : null };
+  }
+  return null;
+};
+
+const resolveDocumentRef = (ref, pool, mediaSourceField) => {
+  if (!ref) return null;
+  const mediaEntity = pool.media[ref.id];
+  if (!mediaEntity) return null;
+  const fileRef = mediaEntity.relationships?.[mediaSourceField]?.data;
+  return { ...mediaEntity, file: fileRef ? pool.files[fileRef.id] ?? null : null };
+};
+
+const resolveAllFields = (entity, pool, { imageFields = [], documentFields = [], taxonomyFields = [] }) => {
+  const resolved = {};
+
+  imageFields.forEach(({ fieldName, mode = 'file', mediaSourceField = 'field_media_image' }) => {
+    const rel = entity.relationships?.[fieldName]?.data;
+    resolved[`${fieldName}_resolved`] = Array.isArray(rel)
+      ? rel.map((r) => resolveMediaRef(r, pool, mode, mediaSourceField)).filter(Boolean)
+      : resolveMediaRef(rel, pool, mode, mediaSourceField);
+  });
+
+  documentFields.forEach(({ fieldName, mediaSourceField = 'field_media_file' }) => {
+    const rel = entity.relationships?.[fieldName]?.data;
+    resolved[`${fieldName}_resolved`] = Array.isArray(rel)
+      ? rel.map((r) => resolveDocumentRef(r, pool, mediaSourceField)).filter(Boolean)
+      : resolveDocumentRef(rel, pool, mediaSourceField);
+  });
+
+  taxonomyFields.forEach(({ fieldName, termImageFields = [], termDocumentFields = [] }) => {
+    const rel = entity.relationships?.[fieldName]?.data;
+
+    const resolveTerm = (ref) => {
+      if (!ref) return null;
+      const term = pool.terms[ref.id];
+      if (!term) return null;
+      if (!termImageFields.length && !termDocumentFields.length) return term;
+      return resolveAllFields(term, pool, {
+        imageFields:    termImageFields,
+        documentFields: termDocumentFields,
+        taxonomyFields: [],
+      });
+    };
+
+    resolved[`${fieldName}_resolved`] = Array.isArray(rel)
+      ? rel.map(resolveTerm).filter(Boolean)
+      : resolveTerm(rel);
+  });
+
+  return { ...entity, ...resolved };
+};
+
+const resolveParagraphsFromPool = (node, pool, paragraphField, paragraphFields) => {
+  const rel = node.relationships?.[paragraphField]?.data;
+  if (!rel) return [];
+
+  return (Array.isArray(rel) ? rel : [rel])
+    .map((ref) => {
+      const paragraph = pool.byId[ref.id];
+      if (!paragraph) return null;
+      const typeConfig = paragraphFields[paragraph.type];
+      if (!typeConfig) return paragraph;
+      return resolveAllFields(paragraph, pool, {
+        imageFields:    typeConfig.imageFields    ?? [],
+        documentFields: typeConfig.documentFields ?? [],
+        taxonomyFields: typeConfig.taxonomyFields ?? [],
+      });
+    })
+    .filter(Boolean);
+};
+
+export const normalizeDrupalUrl = (url) => {
+  if (!url) return null;
+  return url.replace('http://modest-turquoise-bear.168-235-125-96.cpanel.site', '');
+};
+
+// ─── GET all nodes ────────────────────────────────────────────────────────────
+
+export const getNodes = async (type, imageFields = [], filters = {}) => {
+  const include = buildInclude(imageFields);
+
+  const params = {};
+  if (include) params.include = include;
+  Object.entries(filters).forEach(([key, value]) => {
+    params[`filter[${key}]`] = value;
+  });
+
+  const { data } = await drupalApi.get(`/jsonapi/node/${type}`, { params });
+
+  return imageFields.length
+    ? resolveImageFields(data.data, data.included ?? [], imageFields)
+    : data.data;
+};
+
+// ─── GET single node by UUID ──────────────────────────────────────────────────
+
+export const getNode = async (type, uuid, imageFields = []) => {
+  const include = buildInclude(imageFields);
+  const params = include ? { include } : {};
+
+  const { data } = await drupalApi.get(`/jsonapi/node/${type}/${uuid}`, { params });
+
+  const nodes = resolveImageFields([data.data], data.included ?? [], imageFields);
+  return nodes[0];
+};
+
+// ─── GET taxonomy terms ───────────────────────────────────────────────────────
+
+export const getTerms = async (vocabulary, imageFields = [], filters = {}) => {
+  const include = buildInclude(imageFields);
+
+  const params = {};
+  if (include) params.include = include;
+  Object.entries(filters).forEach(([key, value]) => {
+    params[`filter[${key}]`] = value;
+  });
+
+  const { data } = await drupalApi.get(`/jsonapi/taxonomy_term/${vocabulary}`, { params });
+
+  return imageFields.length
+    ? resolveImageFields(data.data, data.included ?? [], imageFields)
+    : data.data;
+};
+
+// ─── GET single taxonomy term by UUID ────────────────────────────────────────
+
+export const getTerm = async (vocabulary, uuid, imageFields = []) => {
+  const include = buildInclude(imageFields);
+  const params = include ? { include } : {};
+
+  const { data } = await drupalApi.get(`/jsonapi/taxonomy_term/${vocabulary}/${uuid}`, { params });
+
+  const terms = resolveImageFields([data.data], data.included ?? [], imageFields);
+  return terms[0];
+};
+
+// ─── GET single taxonomy term by Drupal internal TID ─────────────────────────
+
+export const getTermByTid = async (vocabulary, tid, imageFields = []) => {
+  const include = buildInclude(imageFields);
+
+  const params = { 'filter[drupal_internal__tid]': tid };
+  if (include) params.include = include;
+
+  const { data } = await drupalApi.get(`/jsonapi/taxonomy_term/${vocabulary}`, { params });
+
+  if (!data.data?.length) return null;
+
+  const terms = resolveImageFields(data.data, data.included ?? [], imageFields);
+  return terms[0];
+};
+
+// ─── GET single node with paragraphs, media images, media documents, taxonomy ─
 
 /**
- * Fetch menu items
- * Endpoint example: /jsonapi/menu_items/main
+ * imageFields:    [{ fieldName, mode: 'file'|'media', mediaSourceField? }]
+ * documentFields: [{ fieldName, mediaSourceField? }]
+ * taxonomyFields: [{ fieldName, termImageFields?, termDocumentFields? }]
+ * paragraphField: 'field_paragraphs'
+ * paragraphFields: {
+ *   'paragraph--type': { imageFields, documentFields, taxonomyFields }
+ * }
  */
-export const fetchMenuItems = async (menuName = 'main') => {
-  try {
-    const response = await drupalApi.get(`/jsonapi/menu_items/${menuName}`);
-    return response.data.data.map(item => ({
-      id: item.id,
-      title: item.attributes.title,
-      url: item.attributes.url,
-      weight: item.attributes.weight
-    })).sort((a, b) => a.weight - b.weight);
-  } catch (error) {
-    console.error('Error fetching menu items:', error);
-    throw error;
-  }
+export const getNodeFull = async (
+  type,
+  uuid,
+  {
+    imageFields    = [],
+    documentFields = [],
+    taxonomyFields = [],
+    paragraphField  = 'field_paragraphs',
+    paragraphFields = {},
+  } = {}
+) => {
+  const include = buildFullInclude({ imageFields, documentFields, taxonomyFields, paragraphField, paragraphFields });
+  const params = include ? { include } : {};
+
+  const { data } = await drupalApi.get(`/jsonapi/node/${type}/${uuid}`, { params });
+
+  const pool = buildPool(data.included ?? []);
+  const node = resolveAllFields(data.data, pool, { imageFields, documentFields, taxonomyFields });
+  const paragraphs = resolveParagraphsFromPool(node, pool, paragraphField, paragraphFields);
+
+  return { ...node, [`${paragraphField}_resolved`]: paragraphs };
 };
 
-export default drupalApi;
+// ─── GET all nodes with paragraphs, media images, media documents, taxonomy ───
+
+export const getNodesFull = async (
+  type,
+  {
+    imageFields    = [],
+    documentFields = [],
+    taxonomyFields = [],
+    paragraphField  = 'field_paragraphs',
+    paragraphFields = {},
+    filters         = {},
+  } = {}
+) => {
+  const include = buildFullInclude({ imageFields, documentFields, taxonomyFields, paragraphField, paragraphFields });
+
+  const params = {};
+  if (include) params.include = include;
+  Object.entries(filters).forEach(([key, value]) => {
+    params[`filter[${key}]`] = value;
+  });
+
+  const { data } = await drupalApi.get(`/jsonapi/node/${type}`, { params });
+
+  const pool = buildPool(data.included ?? []);
+
+  return data.data.map((entity) => {
+    const node = resolveAllFields(entity, pool, { imageFields, documentFields, taxonomyFields });
+    const paragraphs = resolveParagraphsFromPool(node, pool, paragraphField, paragraphFields);
+    return { ...node, [`${paragraphField}_resolved`]: paragraphs };
+  });
+};
+
+// ─── GET single node by Drupal internal ID (nid) ─────────────────────────────
+
+export const getNodeByNid = async (type, nid, imageFields = []) => {
+  const include = buildInclude(imageFields);
+
+  const params = { 'filter[drupal_internal__nid]': nid };
+  if (include) params.include = include;
+
+  const { data } = await drupalApi.get(`/jsonapi/node/${type}`, { params });
+
+  if (!data.data?.length) return null;
+
+  const nodes = resolveImageFields(data.data, data.included ?? [], imageFields);
+  return nodes[0];
+};
+
+// ─── GET single node by nid — full resolution (paragraphs, docs, taxonomy) ───
+
+export const getNodeFullByNid = async (
+  type,
+  nid,
+  {
+    imageFields    = [],
+    documentFields = [],
+    taxonomyFields = [],
+    paragraphField  = 'field_paragraphs',
+    paragraphFields = {},
+  } = {}
+) => {
+  const include = buildFullInclude({ imageFields, documentFields, taxonomyFields, paragraphField, paragraphFields });
+
+  const params = { 'filter[drupal_internal__nid]': nid };
+  if (include) params.include = include;
+
+  const { data } = await drupalApi.get(`/jsonapi/node/${type}`, { params });
+
+  if (!data.data?.length) return null;
+
+  const pool = buildPool(data.included ?? []);
+  const node = resolveAllFields(data.data[0], pool, { imageFields, documentFields, taxonomyFields });
+  const paragraphs = resolveParagraphsFromPool(node, pool, paragraphField, paragraphFields);
+
+  return { ...node, [`${paragraphField}_resolved`]: paragraphs };
+};
+
+// ─── Submit webform ───────────────────────────────────────────────────────────
+
+export const submitWebform = async (webformId, formData) => {
+  const { data } = await drupalApi.post(`/webform_rest/${webformId}/submit`, {
+    webform_id: webformId,
+    ...formData,
+  });
+  return data;
+};
+
+// ─── Fetch menu items ─────────────────────────────────────────────────────────
+
+export const fetchMenuItems = async (menuName = 'main') => {
+  const { data } = await drupalApi.get(`/jsonapi/menu_items/${menuName}`);
+  return data.data
+    .map((item) => ({
+      id:     item.id,
+      title:  item.attributes.title,
+      url:    item.attributes.url,
+      weight: item.attributes.weight,
+    }))
+    .sort((a, b) => a.weight - b.weight);
+};

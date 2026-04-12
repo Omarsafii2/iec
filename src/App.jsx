@@ -18,6 +18,7 @@ import AcademyDetailPage from './pages/academies/pages/AcademyDetailPage.jsx';
 import AcademyNewsDetailPage from './pages/academies/pages/AcademyNewsDetailPage.jsx';
 import ProjectsListPage from './pages/projects/pages/ProjectsListPage.jsx';
 import ProjectDetailPage from './pages/projects/pages/ProjectDetailPage.jsx';
+import ContactPage from './pages/Contactpage.jsx';
 import AOS from 'aos';
 import { TopBar } from './components/layout/TopBar.jsx';
 import { Header } from './components/layout/Header.jsx';
@@ -65,6 +66,7 @@ function AppContent() {
           <Route path="/projects" element={<ProjectsListPage />} />
           <Route path="/academies/:academyId/news/:newsId" element={<AcademyNewsDetailPage />} />
           <Route path="/academies/:academyId" element={<AcademyDetailPage />} />
+          <Route path="/contact" element={<ContactPage/>} />
         </Routes>
       </div>
       <Footer />
