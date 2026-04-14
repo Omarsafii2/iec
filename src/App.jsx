@@ -7,6 +7,7 @@ import ClubObjectivesPage from './pages/about-us/pages/objectives/ClubObjectives
 import BylawsPage from './pages/about-us/pages/bylaws/BylawsPage.jsx';
 import AchievementsPage from './pages/about-us/pages/achievements/AchievementsPage.jsx';
 import ClubShopPage from './pages/services/pages/ClubShopPage.jsx';
+import JoinMembershipPage from './pages/services/pages/JoinMembershipPage.jsx';
 import VenueReservationsPage from './pages/services/pages/VenueReservationsPage.jsx';
 import PhotoArchivePage from './pages/news/pages/PhotoArchivePage.jsx';
 import PhotoAlbumDetailPage from './pages/news/pages/PhotoAlbumDetailPage.jsx';
@@ -55,6 +56,7 @@ function AppContent() {
           <Route path="/about/bylaws" element={<BylawsPage />} />
           <Route path="/about/achievements" element={<AchievementsPage />} />
           <Route path="/services/shop" element={<ClubShopPage />} />
+          <Route path="/services/join" element={<JoinMembershipPage />} />
           <Route path="/services/reservations" element={<VenueReservationsPage />} />
           <Route path="/news/photos" element={<PhotoArchivePage />} />
           <Route path="/news/photos/:albumId" element={<PhotoAlbumDetailPage />} />

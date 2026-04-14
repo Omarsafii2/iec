@@ -1,0 +1,121 @@
+.join-membership-section {
+  direction: rtl;
+}
+
+.join-membership-card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(137, 125, 86, 0.14);
+  border-radius: 28px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(251, 248, 243, 0.98)),
+    #ffffff;
+  box-shadow:
+    0 28px 70px -46px rgba(86, 70, 54, 0.4),
+    0 18px 28px -24px rgba(86, 70, 54, 0.22);
+}
+
+.join-membership-card::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(137, 125, 86, 0.4), transparent);
+}
+
+.join-membership-form {
+  --dwf-accent: #6b503c;
+  --dwf-accent-hover: #5c4433;
+  --dwf-border-focus: #897d56;
+  --dwf-border: #d8deea;
+  --dwf-bg-input: #ffffff;
+  --dwf-text: #564636;
+  --dwf-text-label: #564636;
+  --dwf-text-muted: #907f69;
+  --dwf-text-placeholder: #b2a89c;
+  --dwf-radius: 14px;
+  --dwf-radius-btn: 14px;
+  --dwf-font-size: 15px;
+  --dwf-gap: 18px;
+}
+
+.join-membership-form .dwf-label {
+  text-align: right;
+  font-size: 15px;
+  font-weight: 700;
+  color: #564636;
+}
+
+.join-membership-form .dwf-field {
+  gap: 8px;
+}
+
+.join-membership-form .dwf-input,
+.join-membership-form .dwf-textarea,
+.join-membership-form .dwf-select {
+  min-height: 52px;
+  border-width: 1px;
+  border-color: #d7dfeb;
+  border-radius: 14px;
+  padding: 12px 16px;
+  font-size: 15px;
+  color: #564636;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+.join-membership-form .dwf-input::placeholder,
+.join-membership-form .dwf-textarea::placeholder {
+  color: #b5aa9c;
+}
+
+.join-membership-form .dwf-input:focus,
+.join-membership-form .dwf-textarea:focus,
+.join-membership-form .dwf-select:focus {
+  box-shadow: 0 0 0 4px rgba(137, 125, 86, 0.12);
+}
+
+.join-membership-form .dwf-textarea {
+  min-height: 146px;
+  resize: vertical;
+}
+
+.join-membership-form .dwf-actions {
+  margin-top: 14px;
+}
+
+.join-membership-form .dwf-btn {
+  width: 100%;
+  min-height: 56px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #755740 0%, #6b503c 100%);
+  box-shadow: 0 16px 30px -22px rgba(107, 80, 60, 0.8);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.join-membership-form .dwf-btn:hover:not(:disabled) {
+  background: linear-gradient(180deg, #6b503c 0%, #5c4433 100%);
+}
+
+.join-membership-form .dwf-btn-icon {
+  font-size: 16px;
+}
+
+.join-membership-rules li::marker {
+  color: #897d56;
+}
+
+@media (max-width: 640px) {
+  .join-membership-card {
+    border-radius: 22px;
+  }
+
+  .join-membership-form {
+    --dwf-gap: 16px;
+  }
+
+  .join-membership-form .dwf-btn {
+    font-size: 16px;
+  }
+}

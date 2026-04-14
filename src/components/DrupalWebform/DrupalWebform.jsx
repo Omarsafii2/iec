@@ -180,9 +180,20 @@ const getInitialFormData = (fields) =>
 
 // ─── Field Ordering & Layout ──────────────────────────────────────────────────
 
+const resolveFieldSpecifier = (specifier, fields) => {
+  if (typeof specifier === 'string') return specifier;
+  if (Array.isArray(specifier)) {
+    return specifier.find((candidate) => fields.some((field) => field.key === candidate)) ?? null;
+  }
+  return null;
+};
+
 const applyFieldOrder = (fields, fieldOrder) => {
   if (!fieldOrder?.length) return fields;
-  const indexMap = new Map(fieldOrder.map((key, i) => [key, i]));
+  const resolvedOrder = fieldOrder
+    .map((specifier) => resolveFieldSpecifier(specifier, fields))
+    .filter(Boolean);
+  const indexMap = new Map(resolvedOrder.map((key, i) => [key, i]));
   return [...fields].sort((a, b) => {
     const ia = indexMap.get(a.key) ?? Number.MAX_SAFE_INTEGER;
     const ib = indexMap.get(b.key) ?? Number.MAX_SAFE_INTEGER;
@@ -194,7 +205,12 @@ const applyFieldOrder = (fields, fieldOrder) => {
 const buildChunks = (fields, fieldRows) => {
   if (!fieldRows?.length) return fields.map((field) => ({ kind: 'field', field }));
 
-  const pairSet = new Set(fieldRows.map(([a, b]) => `${a}|${b}`));
+  const pairSet = new Set(
+    fieldRows
+      .map(([a, b]) => [resolveFieldSpecifier(a, fields), resolveFieldSpecifier(b, fields)])
+      .filter(([a, b]) => a && b)
+      .map(([a, b]) => `${a}|${b}`)
+  );
   const chunks = [];
   let i = 0;
   while (i < fields.length) {
@@ -333,6 +349,8 @@ const DEFAULT_MESSAGES = {
  * @param {object}   [extraData]     - Extra key/value pairs merged into every submission
  * @param {object}   [messages]      - Override any default UI strings
  * @param {string}   [className]     - Additional class on the <form> element
+ * @param {object}   [fieldOverrides]- Partial field metadata overrides by field key
+ * @param {React.ReactNode} [submitIcon] - Optional icon rendered inside submit button
  * @param {object}   [swalProps]     - Extra SweetAlert2 options merged into every Swal.fire() call
  * @param {Function} [onSuccess]     - Called with Drupal response after success
  * @param {Function} [onError]       - Called with Error object on submission failure
@@ -347,6 +365,8 @@ const DrupalWebform = ({
   extraData,
   messages: messagesProp,
   className,
+  fieldOverrides,
+  submitIcon,
   swalProps,
   onSuccess,
   onError,
@@ -404,8 +424,12 @@ const DrupalWebform = ({
   const displayFields = useMemo(() => {
     let visible = fields.filter((f) => f.type !== 'hidden');
     if (excludeSet) visible = visible.filter((f) => !excludeSet.has(f.key));
+    visible = visible.map((field) => ({
+      ...field,
+      ...(fieldOverrides?.[field.key] ?? {}),
+    }));
     return applyFieldOrder(visible, fieldOrder);
-  }, [fields, fieldOrder, excludeSet]);
+  }, [fields, fieldOrder, excludeSet, fieldOverrides]);
 
   const chunks = useMemo(
     () => buildChunks(displayFields, fieldRows),
@@ -649,6 +673,7 @@ const DrupalWebform = ({
       </div>
       <div className="dwf-actions">
         <button type="submit" className="dwf-btn" disabled={submitting} aria-busy={submitting}>
+          {submitIcon ? <span className="dwf-btn-icon" aria-hidden="true">{submitIcon}</span> : null}
           {submitting ? messages.submitting : (submitLabel ?? messages.submitLabel)}
         </button>
       </div>

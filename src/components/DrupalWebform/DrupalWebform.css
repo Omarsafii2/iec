@@ -370,3 +370,10 @@
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+.dwf-btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
