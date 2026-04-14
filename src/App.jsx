@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-route
 import Home from './pages/home/Home.jsx';
 import DirectorWordPage from './pages/about-us/pages/administrative-board/DirectorWordPage.jsx';
 import BoardMembersPage from './pages/about-us/pages/administrative-board/BoardMembersPage.jsx';
+import HistoryPage from './pages/about-us/pages/history/HistoryPage.jsx';
 import ClubObjectivesPage from './pages/about-us/pages/objectives/ClubObjectivesPage.jsx';
 import BylawsPage from './pages/about-us/pages/bylaws/BylawsPage.jsx';
 import AchievementsPage from './pages/about-us/pages/achievements/AchievementsPage.jsx';
@@ -52,6 +53,8 @@ function AppContent() {
           <Route path="/" element={<Home />} />
           <Route path="/about/director-word" element={<DirectorWordPage />} />
           <Route path="/about/board-members" element={<BoardMembersPage />} />
+          <Route path="/about/history" element={<HistoryPage />} />
+          <Route path="/history" element={<HistoryPage />} />
           <Route path="/about/objectives" element={<ClubObjectivesPage />} />
           <Route path="/about/bylaws" element={<BylawsPage />} />
           <Route path="/about/achievements" element={<AchievementsPage />} />

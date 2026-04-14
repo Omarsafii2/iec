@@ -3,7 +3,7 @@ import { JoinMembershipSection } from '../component/JoinMembershipSection.jsx';
 
 export default function JoinMembershipPage() {
   return (
-    <main className="min-h-screen bg-[#f6f4ef] pt-[140px]">
+    <main className="min-h-screen bg-gray-50 pt-[140px]">
       <InnerPageHero
         title="طلب الانتساب"
         breadcrumbs={[
