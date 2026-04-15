@@ -1,0 +1,91 @@
+.join-membership-section {
+  direction: rtl;
+  background: #f9fafb;
+}
+
+.join-membership-card {
+  background: #ffffff;
+}
+
+.join-membership-form {
+  --dwf-accent: #897d56;
+  --dwf-accent-hover: #756a45;
+  --dwf-border-focus: #897d56;
+  --dwf-border: #e5e7eb;
+  --dwf-bg-input: #ffffff;
+  --dwf-text: #564636;
+  --dwf-text-label: #374151;
+  --dwf-text-placeholder: #9ca3af;
+  --dwf-radius: 12px;
+  --dwf-radius-btn: 12px;
+  --dwf-font-size: 14px;
+  --dwf-gap: 24px;
+}
+
+.join-membership-form .dwf-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: #374151;
+}
+
+.join-membership-form .dwf-field {
+  gap: 8px;
+}
+
+.join-membership-form .dwf-input,
+.join-membership-form .dwf-textarea,
+.join-membership-form .dwf-select {
+  min-height: 52px;
+  border-color: #e5e7eb;
+  background: #ffffff;
+  padding: 12px 16px;
+}
+
+.join-membership-form .dwf-input:focus,
+.join-membership-form .dwf-textarea:focus,
+.join-membership-form .dwf-select:focus {
+  border-color: #897d56;
+  box-shadow: 0 0 0 3px rgba(137, 125, 86, 0.16);
+}
+
+.join-membership-form .dwf-textarea {
+  min-height: 120px;
+  resize: none;
+}
+
+.join-membership-form #email,
+.join-membership-form #mail,
+.join-membership-form #phone,
+.join-membership-form #mobile,
+.join-membership-form #telephone {
+  direction: ltr;
+  text-align: left;
+}
+
+.join-membership-form .dwf-actions {
+  padding-top: 4px;
+}
+
+.join-membership-form .dwf-btn {
+  width: 100%;
+  min-height: 56px;
+  border-radius: 12px;
+  background: #564636;
+  font-size: 18px;
+  font-weight: 700;
+  box-shadow: 0 10px 24px -16px rgba(86, 70, 54, 0.8);
+}
+
+.join-membership-form .dwf-btn:hover:not(:disabled) {
+  background: #3e3226;
+}
+
+.join-membership-form .dwf-btn-icon {
+  order: 2;
+}
+
+@media (max-width: 640px) {
+  .join-membership-form {
+    --dwf-gap: 20px;
+  }
+}

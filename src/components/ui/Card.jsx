@@ -276,6 +276,40 @@ const Card = ({ variant = 'default', ...props }) => {
         </div>
       );
 
+    case 'history-vision':
+      return (
+        <div
+          className={
+            'iec-card iec-card--history-value group rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition-colors hover:border-[#897D56]/30 ' +
+            (props.className || '')
+          }
+          data-variant="history-vision"
+        >
+          <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[#564636]/5 text-[#564636] transition-colors group-hover:bg-[#564636] group-hover:text-white">
+            {props.icon}
+          </div>
+          <h3 className="mb-2 text-xl font-bold text-[#564636]">{props.title}</h3>
+          <p className="leading-relaxed text-gray-500">{props.description}</p>
+        </div>
+      );
+
+    case 'history-mission':
+      return (
+        <div
+          className={
+            'iec-card iec-card--history-value group rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition-colors hover:border-[#897D56]/30 ' +
+            (props.className || '')
+          }
+          data-variant="history-mission"
+        >
+          <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[#897D56]/5 text-[#897D56] transition-colors group-hover:bg-[#897D56] group-hover:text-white">
+            {props.icon}
+          </div>
+          <h3 className="mb-2 text-xl font-bold text-[#564636]">{props.title}</h3>
+          <p className="leading-relaxed text-gray-500">{props.description}</p>
+        </div>
+      );
+
     case 'slider-card': {
       const slides = (props.images || []).map((img, i) => ({
         id: `${props.title}-${i}`,

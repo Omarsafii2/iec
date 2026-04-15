@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import useEmblaCarousel from 'embla-carousel-react';
 import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
+import Card from './Card.jsx';
 
 /* --- Hero defaults & styles --- */
 
@@ -357,6 +358,59 @@ export function ShopProductImageSlider({ slides = [], badge, className }) {
   );
 }
 
+function SliderAcademies({ items = [], className, viewportClassName }) {
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    loop: items.length > 3,
+    direction: 'rtl',
+    align: 'start',
+    dragFree: false,
+  });
+
+  const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
+  const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
+
+  if (!items.length) {
+    return null;
+  }
+
+  return (
+    <div className={`iec-slider iec-slider--academies relative ${className || ''}`} dir="rtl">
+      <div className="relative px-10 md:px-14">
+        <button
+          type="button"
+          className="absolute right-0 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-white/10 text-white shadow-lg backdrop-blur-sm transition-all duration-300 hover:bg-white hover:text-[#564636]"
+          onClick={scrollPrev}
+          aria-label="العناصر السابقة"
+        >
+          <ArrowRight size={20} strokeWidth={2} />
+        </button>
+
+        <div className={`overflow-hidden ${viewportClassName || ''}`} ref={emblaRef}>
+          <div className="-mx-3 flex touch-pan-y">
+            {items.map((item) => (
+              <div
+                key={item.to}
+                className="min-w-0 shrink-0 grow-0 basis-1/2 px-3 md:basis-1/3 lg:basis-1/5"
+              >
+                <Card variant="academies" {...item} />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <button
+          type="button"
+          className="absolute left-0 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-white/10 text-white shadow-lg backdrop-blur-sm transition-all duration-300 hover:bg-white hover:text-[#564636]"
+          onClick={scrollNext}
+          aria-label="العناصر التالية"
+        >
+          <ArrowLeft size={20} strokeWidth={2} />
+        </button>
+      </div>
+    </div>
+  );
+}
+
 /* --- Public API (mirrors Card switch) --- */
 
 export function Slider({ variant = 'hero', ...props }) {
@@ -365,6 +419,8 @@ export function Slider({ variant = 'hero', ...props }) {
       return <SliderHero {...props} />;
     case 'partners':
       return <SliderPartners {...props} />;
+    case 'academies':
+      return <SliderAcademies {...props} />;
     case 'shop-product':
       return <ShopProductImageSlider {...props} />;
     default:
