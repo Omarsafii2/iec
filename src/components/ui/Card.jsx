@@ -11,6 +11,7 @@ import {
   Calendar,
   MapPin,
   ChevronDown,
+  ChevronLeft,
 } from 'lucide-react';
 import { FaLinkedinIn } from 'react-icons/fa';
 import Slider from './Slider.jsx';
@@ -374,6 +375,38 @@ const Card = ({ variant = 'default', ...props }) => {
             {props.ctaLabel}
           </Link>
         </div>
+      );
+
+    case 'search-result':
+      return (
+        <Link
+          to={props.to}
+          className={
+            'iec-card iec-card--search-result group block outline-none focus-visible:ring-2 focus-visible:ring-[#897D56] focus-visible:ring-offset-2 ' +
+            (props.className || '')
+          }
+          data-variant="search-result"
+        >
+          <div className="flex items-start gap-4 rounded-xl border border-gray-100 bg-white p-6 shadow-sm transition-all hover:border-[#897D56]/30 hover:shadow-md">
+            <div className="shrink-0 rounded-lg bg-[#897D56]/10 p-3 text-[#897D56] transition-colors group-hover:bg-[#897D56] group-hover:text-white">
+              {props.icon}
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="mb-1 flex items-center gap-2">
+                <h3 className="text-lg font-bold text-[#564636] transition-colors group-hover:text-[#897D56]">
+                  {props.title}
+                </h3>
+                <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-500">
+                  {props.badge}
+                </span>
+              </div>
+              <p className="text-sm leading-relaxed text-gray-500">{props.description}</p>
+            </div>
+            <div className="mr-auto self-center text-[#897D56] opacity-0 transition-opacity group-hover:opacity-100">
+              <ChevronLeft size={20} strokeWidth={2} aria-hidden />
+            </div>
+          </div>
+        </Link>
       );
 
     case 'slider-card': {

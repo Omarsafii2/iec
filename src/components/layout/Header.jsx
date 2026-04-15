@@ -240,7 +240,7 @@ export function Header() {
                 </button>
               </Link>
               <a
-                href="https://iec-alumni.figma.site"
+                href="https://iec-alumni.jo"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hidden md:flex"
@@ -402,7 +402,7 @@ export function Header() {
               بحث
             </Link>
             <a
-              href="https://iec-alumni.figma.site"
+              href="https://iec-alumni.jo/"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-[#897D56] py-2"
