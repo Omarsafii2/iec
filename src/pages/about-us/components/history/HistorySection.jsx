@@ -1,4 +1,5 @@
 import { BookOpen, Target, Users } from 'lucide-react';
+import Card from '../../../../components/ui/Card.jsx';
 import containerImage from '../../../../../assets/images/Container.png';
 import aminImage from '../../../../../assets/images/amin.png';
 
@@ -18,35 +19,16 @@ const VALUE_CARDS = [
   {
     title: 'رؤيتنا',
     description: 'الريادة في العمل التطوعي والاجتماعي وتمكين الخريجين ليكونوا قادة في مجتمعاتهم.',
-    icon: Target,
-    accent: '#564636',
-    accentSoft: 'bg-[#564636]/5',
-    hoverAccent: 'group-hover:bg-[#564636]',
+    icon: <Target size={24} strokeWidth={2} aria-hidden className="transition-colors group-hover:text-white" />,
+    variant: 'history-vision',
   },
   {
     title: 'رسالتنا',
     description: 'بناء مجتمع متكافل من الخريجين يساهم في رفعة الوطن من خلال برامج نوعية ومستدامة.',
-    icon: BookOpen,
-    accent: '#897D56',
-    accentSoft: 'bg-[#897D56]/5',
-    hoverAccent: 'group-hover:bg-[#897D56]',
+    icon: <BookOpen size={24} strokeWidth={2} aria-hidden className="transition-colors group-hover:text-white" />,
+    variant: 'history-mission',
   },
 ];
-
-function HistoryValueCard({ title, description, icon: Icon, accent, accentSoft, hoverAccent }) {
-  return (
-    <div className="group rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition-colors hover:border-[#897D56]/30">
-      <div
-        className={`mb-4 flex h-12 w-12 items-center justify-center rounded-xl ${accentSoft} transition-colors ${hoverAccent}`}
-        style={{ color: accent }}
-      >
-        <Icon size={24} strokeWidth={2} aria-hidden className="transition-colors group-hover:text-white" />
-      </div>
-      <h3 className="mb-2 text-xl font-bold text-[#564636]">{title}</h3>
-      <p className="leading-relaxed text-gray-500">{description}</p>
-    </div>
-  );
-}
 
 export function HistorySection() {
   return (
@@ -103,7 +85,7 @@ export function HistorySection() {
 
             <div className="grid gap-4 sm:grid-cols-2">
               {VALUE_CARDS.map((card) => (
-                <HistoryValueCard key={card.title} {...card} />
+                <Card key={card.title} {...card} />
               ))}
             </div>
           </div>
