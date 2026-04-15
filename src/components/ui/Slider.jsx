@@ -178,11 +178,38 @@ const DEFAULT_PARTNER_SLIDES = [
   { image: 'https://placehold.co/240x96/f8f9fa/564636?text=Partner+6', alt: 'Partner 6' },
 ];
 
-function SliderPartners({ partners, title = 'شركاؤنا', className, sectionClassName }) {
-  const items = useMemo(() => {
-    const base = partners?.length ? partners : DEFAULT_PARTNER_SLIDES;
-    return [...base, ...base];
-  }, [partners]);
+const PARTNER_SLIDER_MIN = 6;
+
+function PartnerLogoCell({ item }) {
+  return (
+    <div className="iec-slider__slide flex min-w-0 shrink-0 items-center justify-center px-6">
+      <div className="flex h-28 w-full max-w-[200px] items-center justify-center transition-transform duration-300 hover:scale-110">
+        <img
+          src={item.image}
+          alt={item.alt}
+          className="max-h-20 max-w-full object-contain"
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+    </div>
+  );
+}
+
+/** أقل من 6 شعارات: عرض ثابت في المنتصف بدون سلايدر */
+function PartnersStaticGrid({ items }) {
+  return (
+    <div className="mx-auto flex max-w-[1200px] flex-wrap justify-center gap-x-10 gap-y-8 px-4 py-6 md:gap-x-14 md:px-8">
+      {items.map((item, index) => (
+        <PartnerLogoCell key={`${item.alt}-static-${index}`} item={item} />
+      ))}
+    </div>
+  );
+}
+
+/** 6 شعارات أو أكثر: سلايدر Embla مع تكرار للحلقة */
+function PartnersEmblaSlider({ items }) {
+  const loopItems = useMemo(() => [...items, ...items], [items]);
 
   const [emblaRef, emblaApi] = useEmblaCarousel({
     loop: true,
@@ -193,6 +220,57 @@ function SliderPartners({ partners, title = 'شركاؤنا', className, section
 
   const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
   const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
+
+  return (
+    <div className="group relative mx-auto max-w-[1200px] px-4 md:px-12">
+      <button
+        type="button"
+        className="iec-slider__nav iec-slider__nav--prev absolute -right-2 top-1/2 z-20 flex h-12 w-12 -translate-y-1/2 translate-x-4 items-center justify-center rounded-full border border-gray-100 bg-white text-[#564636] opacity-0 shadow-lg transition-all duration-300 hover:bg-[#564636] hover:text-white group-hover:translate-x-0 group-hover:opacity-100 md:-right-6"
+        onClick={scrollPrev}
+        aria-label="الشريك السابق"
+      >
+        <ArrowRight size={22} strokeWidth={2} />
+      </button>
+
+      <div className="iec-slider__viewport overflow-hidden py-4" ref={emblaRef}>
+        <div className="iec-slider__container -mx-6 flex cursor-grab touch-pan-y items-center select-none active:cursor-grabbing">
+          {loopItems.map((item, index) => (
+            <div
+              key={`${item.alt}-${index}`}
+              className="iec-slider__slide min-w-0 shrink-0 grow-0 basis-1/2 px-6 md:basis-1/4 lg:basis-[16.666%]"
+            >
+              <div className="flex h-28 items-center justify-center transition-transform duration-300 hover:scale-110">
+                <img
+                  src={item.image}
+                  alt={item.alt}
+                  className="max-h-20 max-w-full object-contain"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <button
+        type="button"
+        className="iec-slider__nav iec-slider__nav--next absolute -left-2 top-1/2 z-20 flex h-12 w-12 -translate-x-4 -translate-y-1/2 items-center justify-center rounded-full border border-gray-100 bg-white text-[#564636] opacity-0 shadow-lg transition-all duration-300 hover:bg-[#564636] hover:text-white group-hover:translate-x-0 group-hover:opacity-100 md:-left-6"
+        onClick={scrollNext}
+        aria-label="الشريك التالي"
+      >
+        <ArrowLeft size={22} strokeWidth={2} />
+      </button>
+    </div>
+  );
+}
+
+function SliderPartners({ partners, title = 'شركاؤنا', className, sectionClassName }) {
+  const base = useMemo(() => {
+    return partners?.length ? partners : DEFAULT_PARTNER_SLIDES;
+  }, [partners]);
+
+  const useSlider = base.length >= PARTNER_SLIDER_MIN;
 
   return (
     <section
@@ -212,46 +290,7 @@ function SliderPartners({ partners, title = 'شركاؤنا', className, section
           <div className="mx-auto h-1.5 w-20 rounded-full bg-[#897D56] opacity-80" />
         </div>
 
-        <div className="group relative mx-auto max-w-[1200px] px-4 md:px-12">
-          <button
-            type="button"
-            className="iec-slider__nav iec-slider__nav--prev absolute -right-2 top-1/2 z-20 flex h-12 w-12 -translate-y-1/2 translate-x-4 items-center justify-center rounded-full border border-gray-100 bg-white text-[#564636] opacity-0 shadow-lg transition-all duration-300 hover:bg-[#564636] hover:text-white group-hover:translate-x-0 group-hover:opacity-100 md:-right-6"
-            onClick={scrollPrev}
-            aria-label="الشريك السابق"
-          >
-            <ArrowRight size={22} strokeWidth={2} />
-          </button>
-
-          <div className="iec-slider__viewport overflow-hidden py-4" ref={emblaRef}>
-            <div className="iec-slider__container -mx-6 flex cursor-grab touch-pan-y items-center select-none active:cursor-grabbing">
-              {items.map((item, index) => (
-                <div
-                  key={`${item.alt}-${index}`}
-                  className="iec-slider__slide min-w-0 shrink-0 grow-0 basis-1/2 px-6 md:basis-1/4 lg:basis-[16.666%]"
-                >
-                  <div className="flex h-28 items-center justify-center transition-transform duration-300 hover:scale-110">
-                    <img
-                      src={item.image}
-                      alt={item.alt}
-                      className="max-h-20 max-w-full object-contain"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <button
-            type="button"
-            className="iec-slider__nav iec-slider__nav--next absolute -left-2 top-1/2 z-20 flex h-12 w-12 -translate-x-4 -translate-y-1/2 items-center justify-center rounded-full border border-gray-100 bg-white text-[#564636] opacity-0 shadow-lg transition-all duration-300 hover:bg-[#564636] hover:text-white group-hover:translate-x-0 group-hover:opacity-100 md:-left-6"
-            onClick={scrollNext}
-            aria-label="الشريك التالي"
-          >
-            <ArrowLeft size={22} strokeWidth={2} />
-          </button>
-        </div>
+        {useSlider ? <PartnersEmblaSlider items={base} /> : <PartnersStaticGrid items={base} />}
       </div>
     </section>
   );
