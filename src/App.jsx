@@ -21,6 +21,7 @@ import AcademyNewsDetailPage from './pages/academies/pages/AcademyNewsDetailPage
 import ProjectsListPage from './pages/projects/pages/ProjectsListPage.jsx';
 import ProjectDetailPage from './pages/projects/pages/ProjectDetailPage.jsx';
 import ContactPage from './pages/Contactpage.jsx';
+import FaqPage from './pages/faq/pages/FaqPage.jsx';
 import AOS from 'aos';
 import { TopBar } from './components/layout/TopBar.jsx';
 import { Header } from './components/layout/Header.jsx';
@@ -72,6 +73,7 @@ function AppContent() {
           <Route path="/academies/:academyId/news/:newsId" element={<AcademyNewsDetailPage />} />
           <Route path="/academies/:academyId" element={<AcademyDetailPage />} />
           <Route path="/contact" element={<ContactPage/>} />
+          <Route path="/faq" element={<FaqPage />} />
         </Routes>
       </div>
       <Footer />

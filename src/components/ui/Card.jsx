@@ -10,6 +10,7 @@ import {
   Video,
   Calendar,
   MapPin,
+  ChevronDown,
 } from 'lucide-react';
 import { FaLinkedinIn } from 'react-icons/fa';
 import Slider from './Slider.jsx';
@@ -307,6 +308,71 @@ const Card = ({ variant = 'default', ...props }) => {
           </div>
           <h3 className="mb-2 text-xl font-bold text-[#564636]">{props.title}</h3>
           <p className="leading-relaxed text-gray-500">{props.description}</p>
+        </div>
+      );
+
+    case 'faq-item':
+      return (
+        <div
+          className={
+            'iec-card iec-card--faq-item rounded-xl border px-4 transition-colors ' +
+            (props.open
+              ? 'border-[#897D56]/30 bg-[#897D56]/5'
+              : 'border-gray-100 bg-white') +
+            ' ' +
+            (props.className || '')
+          }
+          data-variant="faq-item"
+          data-state={props.open ? 'open' : 'closed'}
+        >
+          <button
+            type="button"
+            className="flex w-full items-start justify-between gap-4 py-4 text-left"
+            onClick={props.onToggle}
+            aria-expanded={props.open}
+          >
+            <div className="flex items-center gap-4 text-right">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#897D56]/10 text-[#897D56]">
+                {props.icon}
+              </div>
+              <span className="text-lg font-bold text-gray-800">{props.title}</span>
+            </div>
+            <ChevronDown
+              size={20}
+              strokeWidth={2}
+              className={
+                'pointer-events-none mt-1 shrink-0 text-gray-400 transition-transform duration-200 ' +
+                (props.open ? 'rotate-180' : '')
+              }
+              aria-hidden
+            />
+          </button>
+
+          {props.open ? (
+            <div className="pb-4 pr-14 text-right text-sm leading-8 text-gray-600">
+              {props.description}
+            </div>
+          ) : null}
+        </div>
+      );
+
+    case 'faq-cta':
+      return (
+        <div
+          className={
+            'iec-card iec-card--faq-cta rounded-2xl bg-[#564636] p-8 text-center text-white ' +
+            (props.className || '')
+          }
+          data-variant="faq-cta"
+        >
+          <h3 className="mb-2 text-xl font-bold">{props.title}</h3>
+          <p className="mb-6 text-white/80">{props.description}</p>
+          <Link
+            to={props.to}
+            className="inline-flex h-12 items-center justify-center rounded-xl bg-white px-8 font-bold text-[#564636] transition-colors hover:bg-gray-100"
+          >
+            {props.ctaLabel}
+          </Link>
         </div>
       );
 
