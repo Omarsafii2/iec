@@ -377,3 +377,78 @@
   justify-content: center;
   line-height: 1;
 }
+
+/* Reusable branded card theme used across contact/join style pages */
+.dwf-theme-brand-card {
+  --dwf-accent: #897d56;
+  --dwf-accent-hover: #756a45;
+  --dwf-border-focus: #897d56;
+  --dwf-border: #e5e7eb;
+  --dwf-bg-input: #f9fafb;
+  --dwf-text: #564636;
+  --dwf-text-label: #374151;
+  --dwf-text-placeholder: #9ca3af;
+  --dwf-radius: 12px;
+  --dwf-radius-btn: 12px;
+  --dwf-font-size: 14px;
+  --dwf-gap: 24px;
+  --dwf-btn-bg: #564636;
+  --dwf-btn-bg-hover: #3e3226;
+}
+
+.dwf-theme-brand-card .dwf-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: #374151;
+}
+
+.dwf-theme-brand-card .dwf-field {
+  gap: 8px;
+}
+
+.dwf-theme-brand-card .dwf-input,
+.dwf-theme-brand-card .dwf-textarea,
+.dwf-theme-brand-card .dwf-select {
+  min-height: 48px;
+  border-color: #e5e7eb;
+  background: var(--dwf-bg-input);
+  padding: 12px 14px;
+}
+
+.dwf-theme-brand-card .dwf-input:focus,
+.dwf-theme-brand-card .dwf-textarea:focus,
+.dwf-theme-brand-card .dwf-select:focus {
+  box-shadow: 0 0 0 3px rgba(137, 125, 86, 0.16);
+}
+
+.dwf-theme-brand-card .dwf-textarea {
+  min-height: 160px;
+  resize: none;
+}
+
+.dwf-theme-brand-card #phone,
+.dwf-theme-brand-card #mobile,
+.dwf-theme-brand-card #telephone,
+.dwf-theme-brand-card #email,
+.dwf-theme-brand-card #mail {
+  direction: ltr;
+  text-align: left;
+}
+
+.dwf-theme-brand-card .dwf-actions {
+  margin-top: 4px;
+}
+
+.dwf-theme-brand-card .dwf-btn {
+  width: 100%;
+  min-height: 56px;
+  border-radius: 12px;
+  background: #564636;
+  font-size: 18px;
+  font-weight: 700;
+  box-shadow: 0 10px 24px -16px rgba(86, 70, 54, 0.8);
+}
+
+.dwf-theme-brand-card .dwf-btn:hover:not(:disabled) {
+  background: #3e3226;
+}

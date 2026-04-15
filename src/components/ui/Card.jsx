@@ -10,6 +10,8 @@ import {
   Video,
   Calendar,
   MapPin,
+  ChevronDown,
+  ChevronLeft,
 } from 'lucide-react';
 import { FaLinkedinIn } from 'react-icons/fa';
 import Slider from './Slider.jsx';
@@ -308,6 +310,103 @@ const Card = ({ variant = 'default', ...props }) => {
           <h3 className="mb-2 text-xl font-bold text-[#564636]">{props.title}</h3>
           <p className="leading-relaxed text-gray-500">{props.description}</p>
         </div>
+      );
+
+    case 'faq-item':
+      return (
+        <div
+          className={
+            'iec-card iec-card--faq-item rounded-xl border px-4 transition-colors ' +
+            (props.open
+              ? 'border-[#897D56]/30 bg-[#897D56]/5'
+              : 'border-gray-100 bg-white') +
+            ' ' +
+            (props.className || '')
+          }
+          data-variant="faq-item"
+          data-state={props.open ? 'open' : 'closed'}
+        >
+          <button
+            type="button"
+            className="flex w-full items-start justify-between gap-4 py-4 text-left"
+            onClick={props.onToggle}
+            aria-expanded={props.open}
+          >
+            <div className="flex items-center gap-4 text-right">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#897D56]/10 text-[#897D56]">
+                {props.icon}
+              </div>
+              <span className="text-lg font-bold text-gray-800">{props.title}</span>
+            </div>
+            <ChevronDown
+              size={20}
+              strokeWidth={2}
+              className={
+                'pointer-events-none mt-1 shrink-0 text-gray-400 transition-transform duration-200 ' +
+                (props.open ? 'rotate-180' : '')
+              }
+              aria-hidden
+            />
+          </button>
+
+          {props.open ? (
+            <div className="pb-4 pr-14 text-right text-sm leading-8 text-gray-600">
+              {props.description}
+            </div>
+          ) : null}
+        </div>
+      );
+
+    case 'faq-cta':
+      return (
+        <div
+          className={
+            'iec-card iec-card--faq-cta rounded-2xl bg-[#564636] p-8 text-center text-white ' +
+            (props.className || '')
+          }
+          data-variant="faq-cta"
+        >
+          <h3 className="mb-2 text-xl font-bold">{props.title}</h3>
+          <p className="mb-6 text-white/80">{props.description}</p>
+          <Link
+            to={props.to}
+            className="inline-flex h-12 items-center justify-center rounded-xl bg-white px-8 font-bold text-[#564636] transition-colors hover:bg-gray-100"
+          >
+            {props.ctaLabel}
+          </Link>
+        </div>
+      );
+
+    case 'search-result':
+      return (
+        <Link
+          to={props.to}
+          className={
+            'iec-card iec-card--search-result group block outline-none focus-visible:ring-2 focus-visible:ring-[#897D56] focus-visible:ring-offset-2 ' +
+            (props.className || '')
+          }
+          data-variant="search-result"
+        >
+          <div className="flex items-start gap-4 rounded-xl border border-gray-100 bg-white p-6 shadow-sm transition-all hover:border-[#897D56]/30 hover:shadow-md">
+            <div className="shrink-0 rounded-lg bg-[#897D56]/10 p-3 text-[#897D56] transition-colors group-hover:bg-[#897D56] group-hover:text-white">
+              {props.icon}
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="mb-1 flex items-center gap-2">
+                <h3 className="text-lg font-bold text-[#564636] transition-colors group-hover:text-[#897D56]">
+                  {props.title}
+                </h3>
+                <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-500">
+                  {props.badge}
+                </span>
+              </div>
+              <p className="text-sm leading-relaxed text-gray-500">{props.description}</p>
+            </div>
+            <div className="mr-auto self-center text-[#897D56] opacity-0 transition-opacity group-hover:opacity-100">
+              <ChevronLeft size={20} strokeWidth={2} aria-hidden />
+            </div>
+          </div>
+        </Link>
       );
 
     case 'slider-card': {

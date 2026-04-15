@@ -22,7 +22,7 @@ const DEFAULT_HERO_SLIDES = [
     subtitle: 'ملتقى الأجيال وذاكرة المكان',
     primary: {
       label: 'انضم إلينا الآن',
-      href: 'https://iec-alumni.figma.site',
+      href: 'https://iec-alumni.jo/',
       external: true,
     },
     secondary: { to: '/about/history', label: 'إقرأ المزيد' },
@@ -36,7 +36,7 @@ const DEFAULT_HERO_SLIDES = [
     subtitle: 'نحيي الماضي لنبني المستقبل',
     primary: {
       label: 'انضم إلينا الآن',
-      href: 'https://iec-alumni.figma.site',
+      href: 'https://iec-alumni.jo/',
       external: true,
     },
     secondary: { to: '/about/history', label: 'إقرأ المزيد' },
