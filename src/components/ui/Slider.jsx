@@ -181,7 +181,7 @@ const DEFAULT_PARTNER_SLIDES = [
 function SliderPartners({ partners, title = 'شركاؤنا', className, sectionClassName }) {
   const items = useMemo(() => {
     const base = partners?.length ? partners : DEFAULT_PARTNER_SLIDES;
-    return [...base, ...base];
+    return base;
   }, [partners]);
 
   const [emblaRef, emblaApi] = useEmblaCarousel({
