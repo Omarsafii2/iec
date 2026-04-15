@@ -20,7 +20,7 @@ import AcademyDetailPage from './pages/academies/pages/AcademyDetailPage.jsx';
 import AcademyNewsDetailPage from './pages/academies/pages/AcademyNewsDetailPage.jsx';
 import ProjectsListPage from './pages/projects/pages/ProjectsListPage.jsx';
 import ProjectDetailPage from './pages/projects/pages/ProjectDetailPage.jsx';
-import ContactPage from './pages/Contactpage.jsx';
+import ContactPage from './pages/contact/Contactpage.jsx';
 import FaqPage from './pages/faq/pages/FaqPage.jsx';
 import AOS from 'aos';
 import { TopBar } from './components/layout/TopBar.jsx';

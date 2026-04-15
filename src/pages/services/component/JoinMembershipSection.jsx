@@ -1,9 +1,5 @@
 import { Send, UserPlus } from 'lucide-react';
-import DrupalWebform from '../../../components/DrupalWebform/DrupalWebform.jsx';
 import './JoinMembershipSection.css';
-
-const JOIN_WEBFORM_ID = import.meta.env.VITE_WEBFORM_JOIN_ID || 'contact_us';
-const JOIN_EXTRA_DATA = JOIN_WEBFORM_ID === 'contact_us' ? { subject: 'طلب انتساب' } : undefined;
 
 const MEMBERSHIP_RULES = [
   'أن يكون المتقدم خريجاً من مدارس الكلية العلمية الإسلامية، أو ممن درس فيها لمدة لا تقل عن ثلاث سنوات.',
@@ -30,51 +26,36 @@ export function JoinMembershipSection() {
               </div>
             </div>
 
-            <DrupalWebform
-              webformId={JOIN_WEBFORM_ID}
-              className="join-membership-form"
-              submitLabel="ارسال طلب"
-              submitIcon={<Send size={18} strokeWidth={2} />}
-              excludeFields={['subject']}
-              extraData={JOIN_EXTRA_DATA}
-              fieldOrder={[
-                ['full_name', 'name', 'fullName'],
-                ['email', 'mail'],
-                ['phone', 'mobile', 'telephone'],
-                ['message', 'details', 'note'],
-              ]}
-              fieldRows={[
-                [
-                  ['email', 'mail'],
-                  ['phone', 'mobile', 'telephone'],
-                ],
-              ]}
-              fieldOverrides={{
-                full_name: { title: 'الاسم بالكامل', placeholder: 'الاسم الرباعي' },
-                name: { title: 'الاسم بالكامل', placeholder: 'الاسم الرباعي' },
-                fullName: { title: 'الاسم بالكامل', placeholder: 'الاسم الرباعي' },
-                email: { title: 'البريد الإلكتروني', placeholder: 'example@email.com' },
-                mail: { title: 'البريد الإلكتروني', placeholder: 'example@email.com' },
-                phone: { title: 'رقم الهاتف', placeholder: '0790000000' },
-                mobile: { title: 'رقم الهاتف', placeholder: '0790000000' },
-                telephone: { title: 'رقم الهاتف', placeholder: '0790000000' },
-                message: { title: 'الرسالة', placeholder: 'اكتب رسالتك هنا...' },
-                details: { title: 'الرسالة', placeholder: 'اكتب رسالتك هنا...' },
-                note: { title: 'الرسالة', placeholder: 'اكتب رسالتك هنا...' },
-              }}
-              messages={{
-                loading: 'جارٍ تحميل النموذج...',
-                loadError: 'تعذر تحميل نموذج طلب العضوية. يرجى المحاولة مرة أخرى.',
-                submitting: 'جارٍ إرسال الطلب...',
-                successTitle: 'تم إرسال الطلب بنجاح',
-                successText: 'شكرًا لك، سيتم مراجعة طلبك والتواصل معك في أقرب وقت ممكن.',
-                errorTitle: 'تعذر إرسال الطلب',
-                errorGeneric: 'حدث خطأ أثناء إرسال الطلب. يرجى المحاولة مرة أخرى.',
-                ok: 'حسنًا',
-                fieldRequired: (title) => `حقل ${title} مطلوب`,
-                invalidEmail: 'يرجى إدخال بريد إلكتروني صحيح',
-              }}
-            />
+            <form className="join-membership-form">
+              <div className="join-membership-form__field">
+                <label htmlFor="join-full-name" className="join-membership-form__label">الاسم بالكامل</label>
+                <input id="join-full-name" className="join-membership-form__input" type="text" placeholder="الاسم الرباعي" />
+              </div>
+
+              <div className="join-membership-form__row">
+                <div className="join-membership-form__field">
+                  <label htmlFor="join-email" className="join-membership-form__label">البريد الإلكتروني</label>
+                  <input id="join-email" className="join-membership-form__input join-membership-form__input--ltr" type="email" placeholder="example@email.com" dir="ltr" />
+                </div>
+
+                <div className="join-membership-form__field">
+                  <label htmlFor="join-phone" className="join-membership-form__label">رقم الهاتف</label>
+                  <input id="join-phone" className="join-membership-form__input join-membership-form__input--ltr" type="tel" placeholder="0790000000" dir="ltr" />
+                </div>
+              </div>
+
+              <div className="join-membership-form__field">
+                <label htmlFor="join-message" className="join-membership-form__label">الرسالة</label>
+                <textarea id="join-message" className="join-membership-form__textarea" placeholder="اكتب رسالتك هنا..." />
+              </div>
+
+              <div className="join-membership-form__actions">
+                <button type="button" className="join-membership-form__button">
+                  <span>ارسال طلب</span>
+                  <Send size={18} strokeWidth={2} aria-hidden />
+                </button>
+              </div>
+            </form>
 
             <div className="mt-12 border-t border-gray-100 pt-8">
               <h3 className="mb-6 text-right text-xl font-bold text-[#564636]">شروط التقدم لطلب الانتساب</h3>

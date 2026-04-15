@@ -1,80 +1,71 @@
-.join-membership-section {
-  direction: rtl;
-  background: #f9fafb;
-}
-
-.join-membership-card {
-  background: #ffffff;
-}
-
-.join-membership-form {
+.static-webform {
   display: flex;
   flex-direction: column;
   gap: 24px;
 }
 
-.join-membership-form__row {
+.static-webform__row {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 24px;
 }
 
-.join-membership-form__field {
+.static-webform__field {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.join-membership-form__label {
+.static-webform__label {
   color: #374151;
   font-size: 14px;
   font-weight: 700;
 }
 
-.join-membership-form__input,
-.join-membership-form__textarea {
+.static-webform__input,
+.static-webform__textarea {
   width: 100%;
   border: 1px solid #e5e7eb;
   border-radius: 12px;
-  background: #ffffff;
+  background: #f9fafb;
   color: #564636;
   font-size: 14px;
   outline: none;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.join-membership-form__input {
-  min-height: 52px;
-  padding: 12px 16px;
+.static-webform__input {
+  min-height: 48px;
+  padding: 12px 14px;
 }
 
-.join-membership-form__textarea {
-  min-height: 120px;
-  padding: 12px 16px;
+.static-webform__textarea {
+  min-height: 160px;
+  padding: 12px 14px;
   resize: none;
 }
 
-.join-membership-form__input::placeholder,
-.join-membership-form__textarea::placeholder {
+.static-webform__input::placeholder,
+.static-webform__textarea::placeholder {
   color: #9ca3af;
 }
 
-.join-membership-form__input:focus,
-.join-membership-form__textarea:focus {
+.static-webform__input:focus,
+.static-webform__textarea:focus {
   border-color: #897d56;
   box-shadow: 0 0 0 3px rgba(137, 125, 86, 0.16);
 }
 
-.join-membership-form__input--ltr {
+.static-webform__input--ltr {
   direction: ltr;
   text-align: left;
 }
 
-.join-membership-form__actions {
-  padding-top: 4px;
+.static-webform__actions {
+  margin-top: 4px;
 }
 
-.join-membership-form__button {
+.static-webform__button {
   display: inline-flex;
   width: 100%;
   min-height: 56px;
@@ -92,17 +83,17 @@
   cursor: pointer;
 }
 
-.join-membership-form__button:hover {
+.static-webform__button:hover {
   background: #3e3226;
 }
 
 @media (max-width: 640px) {
-  .join-membership-form {
+  .static-webform__row {
+    grid-template-columns: 1fr;
     gap: 20px;
   }
 
-  .join-membership-form__row {
-    grid-template-columns: 1fr;
+  .static-webform {
     gap: 20px;
   }
 }
