@@ -17,8 +17,13 @@ function SectionTitle({ children, id }) {
 
 /** صفحة تفاصيل أكاديمية / شبكة */
 export function AcademyDetailContent({ academy }) {
+  // activitiesLabel: "الدورات والأنشطة" for Academic, "الفعاليات والمبادرات" for Networking
+  const activitiesLabel = academy.activitiesLabel ?? 'الدورات والأنشطة';
+
   return (
     <div className="iec-academy-detail container mx-auto px-4 py-16">
+
+      {/* Intro */}
       <div
         className="iec-academy-detail__intro mb-12 flex flex-col items-center gap-8 rounded-3xl border border-gray-100 bg-white p-8 shadow-sm md:flex-row"
         data-aos="fade-up"
@@ -44,57 +49,69 @@ export function AcademyDetailContent({ academy }) {
         </div>
       </div>
 
-      <section className="iec-academy-detail__activities mb-16" aria-labelledby="academy-activities-heading">
-        <div className="iec-academy-detail__activities-header mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-center">
-          <SectionTitle id="academy-activities-heading">الدورات والأنشطة</SectionTitle>
-        </div>
-        <div
-          className="iec-academy-detail__activities-grid grid gap-6 md:grid-cols-2 lg:grid-cols-3"
-          data-aos="fade-up"
-        >
-          {(academy.activities || []).map((act, i) => (
-            <Card
-              key={`${act.title}-${i}`}
-              variant="academyActivity"
-              date={act.date}
-              title={act.title}
-              location={act.location}
-              phone={act.phone || academy.contactPhone}
-            />
-          ))}
-        </div>
-      </section>
-
-      <section className="iec-academy-detail__partners mb-16" aria-labelledby="academy-partners-heading">
-        <SectionTitle id="academy-partners-heading">شركاؤنا</SectionTitle>
-        <div
-          className="iec-academy-detail__partners-box rounded-3xl border border-gray-100 bg-white p-8 shadow-sm"
-          data-aos="fade-up"
-        >
-          <div className="iec-academy-detail__partners-logos flex flex-wrap items-center justify-center gap-12">
-            {(academy.partners || []).map((p, i) => (
-              <Card key={`${p.src}-${i}`} variant="academyPartnerLogo" src={p.src} alt={p.alt} />
+      {/* Activities / Events — dynamic title */}
+      {(academy.activities?.length > 0) && (
+        <section className="iec-academy-detail__activities mb-16" aria-labelledby="academy-activities-heading">
+          <div className="iec-academy-detail__activities-header mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-center">
+            <SectionTitle id="academy-activities-heading">{activitiesLabel}</SectionTitle>
+          </div>
+          <div
+            className="iec-academy-detail__activities-grid grid gap-6 md:grid-cols-2 lg:grid-cols-3"
+            data-aos="fade-up"
+          >
+            {academy.activities.map((act, i) => (
+              <Card
+                key={`${act.title}-${i}`}
+                variant="academyActivity"
+                date={act.date}
+                title={act.title}
+                location={act.location}
+                phone={act.phone || academy.contactPhone}
+              />
             ))}
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
-      <section className="iec-academy-detail__bulletin mb-16" aria-labelledby="academy-bulletin-heading">
-        <SectionTitle id="academy-bulletin-heading">النشرة الإخبارية</SectionTitle>
-        <div className="iec-academy-detail__bulletin-grid grid gap-6 md:grid-cols-2" data-aos="fade-up">
-          {(academy.newsItems || []).map((item, i) => (
-            <Card
-              key={`${item.to}-${i}`}
-              variant="academyNewsBrief"
-              day={item.day}
-              monthYear={item.monthYear}
-              title={item.title}
-              excerpt={item.excerpt}
-              readMoreTo={item.to}
-            />
-          ))}
-        </div>
-      </section>
+      {/* Partners — from field_media_images */}
+      {(academy.partners?.length > 0) && (
+        <section className="iec-academy-detail__partners mb-16" aria-labelledby="academy-partners-heading">
+          <SectionTitle id="academy-partners-heading">شركاؤنا</SectionTitle>
+          <div
+            className="iec-academy-detail__partners-box rounded-3xl border border-gray-100 bg-white p-8 shadow-sm"
+            data-aos="fade-up"
+          >
+            <div className="iec-academy-detail__partners-logos flex flex-wrap items-center justify-center gap-12">
+              {academy.partners.map((p, i) => (
+                <Card key={`${p.src}-${i}`} variant="academyPartnerLogo" src={p.src} alt={p.alt} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* News — filtered by relationship */}
+      {(academy.newsItems?.length > 0) && (
+        <section className="iec-academy-detail__bulletin mb-16" aria-labelledby="academy-bulletin-heading">
+          <SectionTitle id="academy-bulletin-heading">النشرة الإخبارية</SectionTitle>
+          <div className="iec-academy-detail__bulletin-grid grid gap-6 md:grid-cols-2" data-aos="fade-up">
+            {academy.newsItems.map((item, i) => (
+              <Card
+                key={`${item.to}-${i}`}
+                variant="academyNewsBrief"
+                day={item.day}
+                monthYear={item.monthYear}
+                title={item.title}
+                excerpt={item.excerpt}
+                readMoreTo={item.to}
+              />
+            ))}
+          </div>
+        </section>
+      )}
+
     </div>
   );
 }
+
+export default AcademyDetailContent;
