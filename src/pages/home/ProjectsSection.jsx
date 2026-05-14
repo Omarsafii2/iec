@@ -136,7 +136,7 @@ export function ProjectsSection() {
               <span className="h-0.5 w-10 bg-[#897D56]" />
               <span className="text-sm font-medium tracking-wide text-[#897D56]">مبادراتنا</span>
             </div>
-            <h2 className="mb-4 text-4xl font-bold leading-tight text-[#564636]">مشاريع النادي</h2>
+            <h2 className="mb-4 text-4xl font-bold leading-tight text-[#564636]">الأذرع المحركة في نادي الخريجين</h2>
             <p className="text-lg leading-relaxed text-gray-500">
               نطوّر مشاريع ريادية تخدم الأعضاء والمجتمع، من المنصات الرقمية إلى المرافق والمتاجر
               الخيرية، ضمن رؤية واضحة للنمو المستدام.

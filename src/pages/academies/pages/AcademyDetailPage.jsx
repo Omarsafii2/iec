@@ -18,7 +18,10 @@ const ACADEMY_FIELDS = {
   paragraphField:  'field_courses_and_events',
   paragraphFields: {
     'paragraph--networking_and_academic': {
-      imageFields:    [],
+      // field_image references media--image → include nested file via field_media_image
+      imageFields: [
+        { fieldName: 'field_image', mode: 'media', mediaSourceField: 'field_media_image' },
+      ],
       documentFields: [],
       taxonomyFields: [],
     },
@@ -30,14 +33,30 @@ const NEWS_IMAGE_FIELDS = [
 ];
 
 // Taxonomy UUIDs
-const ACADEMIC_TERM_UUID   = 'fc986f47-15ec-4496-95a1-c65e4c2d9cb0';
-const NETWORKING_TERM_UUID = 'f7d9156f-562a-48b9-84c6-866957cb01b9';
+const ACADEMIC_TERM_UUID = 'fc986f47-15ec-4496-95a1-c65e4c2d9cb0';
 
 // ─── 2. Helpers ───────────────────────────────────────────────────────────────
 
 const resolveImageUrl = (resolved) => {
   const uri = resolved?.file?.attributes?.uri?.url ?? null;
   return uri ? `${DRUPAL_BASE_URL}${uri}` : null;
+};
+
+/** Paragraph «field_image»: core Image (file) or media-shaped { file } */
+const resolveFieldImageUrl = (resolved) => {
+  const fromMedia = resolveImageUrl(resolved);
+  if (fromMedia) return fromMedia;
+  if (!resolved?.attributes?.uri) return null;
+  const u = resolved.attributes.uri;
+  const path = typeof u === 'object' && u !== null ? u.url ?? u.value : u;
+  if (!path || typeof path !== 'string') return null;
+  if (path.startsWith('http')) return path;
+  if (path.startsWith('public://')) {
+    const rest = path.replace(/^public:\/\//, '').replace(/^\/+/, '');
+    return `${DRUPAL_BASE_URL}/sites/default/files/${rest}`;
+  }
+  const normalized = path.startsWith('/') ? path : `/${path}`;
+  return `${DRUPAL_BASE_URL}${normalized}`;
 };
 
 const formatDate = (raw) => {
@@ -78,14 +97,25 @@ const transformAcademy = (node) => {
     ? 'الدورات والأنشطة'
     : 'الفعاليات والمبادرات';
 
-  // Activities from paragraphs
-  const activities = (node.field_courses_and_events_resolved ?? []).map((p) => ({
-    id:       p.id,
-    title:    p.attributes?.field_title    ?? '',
-    date:     formatDate(p.attributes?.field_date),
-    location: p.attributes?.field_location ?? '',
-    phone:    p.attributes?.field_phone_number ?? '',
-  }));
+  const activities = (node.field_courses_and_events_resolved ?? []).map((p) => {
+    const image = resolveFieldImageUrl(p.field_image_resolved);
+    const imageAlt =
+      p.attributes?.field_image?.meta?.alt ||
+      p.attributes?.field_image?.alt ||
+      p.field_image_resolved?.attributes?.name ||
+      p.field_image_resolved?.file?.attributes?.filename ||
+      p.attributes?.field_title ||
+      '';
+    return {
+      id:        p.id,
+      title:     p.attributes?.field_title ?? '',
+      date:      formatDate(p.attributes?.field_date),
+      location:  p.attributes?.field_location ?? '',
+      phone:     p.attributes?.field_phone_number ?? '',
+      image:     image || null,
+      imageAlt,
+    };
+  });
 
   return {
     id:              node.id,

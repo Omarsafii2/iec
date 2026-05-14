@@ -113,6 +113,7 @@ export function VolunteerHourSection() {
 
             <Link
               to={ctaHref}
+              target={'_blank'}
               className="inline-flex h-12 items-center justify-center whitespace-nowrap rounded-xl bg-[#897D56] px-8 py-2 text-lg font-medium text-white shadow-lg outline-none ring-offset-background transition-all hover:bg-[#756A45] hover:shadow-xl focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             >
               {ctaLabel}

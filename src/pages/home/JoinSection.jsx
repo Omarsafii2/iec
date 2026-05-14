@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { GraduationCap, ArrowLeft } from 'lucide-react';
 import { getNodes } from '../../services/api/drupalApi.js';
-
+import { Link } from 'react-router-dom';
 // ─── 1. Field config ──────────────────────────────────────────────────────────
 // No image fields needed — background is a static Unsplash URL
 
@@ -22,13 +22,11 @@ const transformInvitation = (node) => {
 
   // CTA — external URL in this case
   const rawCta   = attr.field_call_to_action_button;
-  const ctaHref  = rawCta?.uri ?? 'https://iec-alumni.jo/';
+  const ctaHref  = rawCta?.uri ?? '/services/join';
   const ctaLabel = rawCta?.title ?? 'استمارة تسجيل عضوية جديدة';
-  const ctaExternal = !ctaHref.startsWith('internal:');
-
   const tag = attr.field_tag ?? '';
 
-  return { headingHtml, description, ctaHref, ctaLabel, ctaExternal, tag };
+  return { headingHtml, description, ctaHref, ctaLabel, tag };
 };
 
 // ─── 3. Component ─────────────────────────────────────────────────────────────
@@ -57,13 +55,13 @@ export function JoinSection() {
   // Fallback values — render immediately with static content, swap on load
   const headingHtml  = data?.headingHtml  ?? '';
   const description  = data?.description  ?? 'انضم إلينا اليوم وكن جزءاً من شبكة خريجينا المتميزة. سجل عضويتك الآن واستفد من كافة الميزات والخدمات الحصرية للأعضاء.';
-  const ctaHref      = data?.ctaHref      ?? 'https://iec-alumni.jo/';
+  const ctaHref      = data?.ctaHref      ?? '/services/join';
   const ctaLabel     = data?.ctaLabel     ?? 'استمارة تسجيل عضوية جديدة';
   const ctaExternal  = data?.ctaExternal  ?? true;
   const tag          = data?.tag          ?? 'التسجيل متاح لجميع الدفعات';
 
   return (
-    <section id="join" className="relative overflow-hidden py-24" dir="rtl">
+    <section id="join" className="relative overflow-hidden pt-[55px] pb-[150px]" dir="rtl">
 
       {/* Background */}
       <div className="absolute inset-0 z-0">
@@ -110,16 +108,14 @@ export function JoinSection() {
 
           {/* CTA */}
           <div className="flex flex-col items-center gap-6">
-            <a
-              href={ctaHref}
-              target={ctaExternal ? '_blank' : undefined}
-              rel={ctaExternal ? 'noopener noreferrer' : undefined}
+            <Link
+              to="/services/join"
               className="group relative flex h-16 items-center justify-center gap-4 overflow-hidden rounded-2xl border-t border-white/20 bg-[#897D56] px-12 py-2 text-xl font-medium text-white shadow-[0_0_50px_-10px_rgba(137,125,86,0.6)] outline-none ring-offset-background transition-all duration-300 hover:scale-[1.02] hover:bg-[#756A45] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             >
               <span className="absolute inset-0 -translate-x-full skew-x-12 bg-white/20 transition-transform duration-500 ease-out group-hover:translate-x-0" />
               <span className="relative z-10 font-bold">{ctaLabel}</span>
               <ArrowLeft className="relative z-10 size-6 transition-transform group-hover:-translate-x-1" strokeWidth={2} aria-hidden />
-            </a>
+            </Link>
 
             {tag && (
               <p className="flex items-center gap-2 text-sm text-white/50">
