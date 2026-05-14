@@ -58,37 +58,40 @@ export function Header() {
       >
         <div className="container mx-auto flex items-center justify-between px-4">
           <div className="z-50 flex items-center gap-4">
-            <Link className="group flex items-center gap-3" to="/">
-              <div
-                className={`relative rounded-full p-2 transition-all duration-500 ease-out ${
-                  solid ? 'bg-transparent' : 'bg-white/10 shadow-xl ring-2 ring-white/10 backdrop-blur-sm'
-                }`}
-              >
+            <Link className="group flex min-w-0 max-w-full items-center gap-2 sm:gap-3" to="/">
+ 
                 <img
                   src="/logo.png"
                   alt="IECA Alumni Club Logo"
                   className={`object-contain transition-all duration-500 drop-shadow-lg ${
-                    solid ? 'h-16 w-16 md:h-20 md:w-20' : 'h-20 w-20 md:h-[100px] md:w-[100px]'
+                    solid ? 'h-16 w-16 md:h-28 md:w-28' : 'h-20 w-20 md:h-[130px] md:w-[130px]'
                   }`}
+                  style={{ 
+                    background: 'rgba(255,255,255,0.16)',
+                    borderRadius: '50%',
+                    padding: '4px 5px 5px 3px',
+                    backdropFilter: 'blur(55px)',
+               
+                   }}
                 />
-              </div>
-              <div className="flex flex-col opacity-100 transition-all duration-500">
+
+              <div className="flex min-w-0 flex-col font-['Cairo',sans-serif] opacity-100 transition-all duration-500">
                 <h1
-                  className={`text-2xl font-extrabold leading-none tracking-wide whitespace-nowrap drop-shadow-md transition-colors duration-300 md:text-4xl ${
+                  className={`text-3xl font-extrabold leading-tight tracking-tight drop-shadow-md transition-colors duration-300 sm:text-4xl md:text-[2.35rem] ${
                     solid ? 'text-[#564636]' : 'text-white'
                   }`}
                 >
                   نادي خريجي
                 </h1>
                 <span
-                  className={`mt-1 text-sm font-bold tracking-wider whitespace-nowrap drop-shadow-sm transition-colors duration-300 md:text-lg ${
+                  className={`mt-1 text-base font-bold leading-snug tracking-normal drop-shadow-sm transition-colors duration-300 sm:text-lg md:text-xl ${
                     solid ? 'text-[#897D56]' : 'text-gray-200'
                   }`}
                 >
                   الكلية العلمية الإسلامية
                 </span>
                 <span
-                  className={`mt-0.5 text-[24px] font-bold tracking-wider whitespace-nowrap drop-shadow-sm transition-colors duration-300 ${
+                  className={`mt-1 text-xs font-semibold leading-snug tracking-normal drop-shadow-sm transition-colors duration-300 sm:text-sm md:text-base ${
                     solid ? 'text-[#564636]' : 'text-gray-200'
                   }`}
                 >
@@ -239,29 +242,22 @@ export function Header() {
                   <Search size={22} strokeWidth={2} />
                 </button>
               </Link>
-              <a
-                href="https://iec-alumni.jo"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hidden md:flex"
+              <Link
+                to="/services/join"
+                className={`hidden h-11 items-center justify-center gap-2 rounded-full border-2 px-6 py-2 text-sm font-bold shadow-lg ring-offset-background transition-all duration-300 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 md:inline-flex ${solid ? 'border-transparent bg-[#897D56] text-white hover:bg-[#756A45]' : 'border-white/30 bg-white/10 text-white backdrop-blur-md hover:bg-white hover:text-[#564636]'}`}
               >
-                <button
-                  type="button"
-                  className={`flex h-11 items-center justify-center gap-2 rounded-full border-2 px-6 py-2 text-sm font-bold shadow-lg ring-offset-background transition-all duration-300 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 ${solid ? 'border-transparent bg-[#897D56] text-white hover:bg-[#756A45]' : 'border-white/30 bg-white/10 text-white backdrop-blur-md hover:bg-white hover:text-[#564636]'}`}
-                >
-                  {solid ? (
-                    <>
-                      <UserPlus size={18} strokeWidth={2} aria-hidden />
-                      <span className="relative top-px">تسجيل عضوية</span>
-                    </>
-                  ) : (
-                    <>
-                      <span className="relative top-px">تسجيل عضوية</span>
-                      <UserPlus size={18} strokeWidth={2} aria-hidden />
-                    </>
-                  )}
-                </button>
-              </a>
+                {solid ? (
+                  <>
+                    <UserPlus size={18} strokeWidth={2} aria-hidden />
+                    <span className="relative top-px">تسجيل عضوية</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="relative top-px">تسجيل عضوية</span>
+                    <UserPlus size={18} strokeWidth={2} aria-hidden />
+                  </>
+                )}
+              </Link>
               <button
                 type="button"
                 className={`rounded-full p-2 transition-colors lg:hidden ${
@@ -401,14 +397,13 @@ export function Header() {
             <Link to="/search" onClick={() => setMobileOpen(false)} className="hover:text-[#897D56] py-2">
               بحث
             </Link>
-            <a
-              href="https://iec-alumni.jo/"
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              to="/services/join"
+              onClick={() => setMobileOpen(false)}
               className="hover:text-[#897D56] py-2"
             >
               تسجيل عضوية
-            </a>
+            </Link>
           </nav>
         </div>
       )}

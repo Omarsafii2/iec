@@ -102,13 +102,28 @@ const Card = ({ variant = 'default', ...props }) => {
       return (
         <div
           className={
-            'iec-card iec-card--academy-activity group overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-shadow hover:shadow-md ' +
+            'iec-card iec-card--academy-activity group flex h-full flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-shadow hover:shadow-md ' +
             (props.className || '')
           }
           data-variant="academy-activity"
         >
-          <div className="iec-card__accent-bar h-4 w-full bg-[#897D56]" aria-hidden />
-          <div className="iec-card__body p-6">
+          {props.image ? (
+            <div className="iec-card__media relative h-44 w-full shrink-0 overflow-hidden bg-gray-100 md:h-52">
+              <img
+                src={props.image}
+                alt={props.imageAlt || props.title}
+                className="iec-card__image h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                loading="lazy"
+                decoding="async"
+              />
+              <div
+                className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/25 to-transparent"
+                aria-hidden
+              />
+            </div>
+          ) : null}
+          <div className="iec-card__accent-bar h-1.5 w-full shrink-0 bg-[#897D56]" aria-hidden />
+          <div className="iec-card__body flex flex-1 flex-col p-6 justify-end">
             <div className="iec-card__date-row mb-3 flex items-center gap-2 text-sm font-bold text-[#897D56]">
               <Calendar size={16} strokeWidth={2} aria-hidden />
               <span className="iec-card__date">{props.date}</span>

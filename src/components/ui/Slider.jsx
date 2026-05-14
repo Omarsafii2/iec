@@ -55,6 +55,7 @@ const DEFAULT_HERO_SLIDES = [
 ];
 
 function HeroPrimaryCta({ primary }) {
+  if (!primary) return null;
   if (primary.href) {
     return (
       <a
@@ -67,15 +68,45 @@ function HeroPrimaryCta({ primary }) {
       </a>
     );
   }
-  return (
-    <Link to={primary.to} className={HERO_PRIMARY_BTN}>
-      {primary.label}
-    </Link>
-  );
+  if (primary.to) {
+    return (
+      <Link to={primary.to} className={HERO_PRIMARY_BTN}>
+        {primary.label}
+      </Link>
+    );
+  }
+  return null;
+}
+
+function HeroSecondaryCta({ secondary }) {
+  if (!secondary) return null;
+  if (secondary.href) {
+    return (
+      <a
+        href={secondary.href}
+        target={secondary.external ? '_blank' : undefined}
+        rel={secondary.external ? 'noopener noreferrer' : undefined}
+        className={HERO_SECONDARY_BTN}
+      >
+        {secondary.label}
+      </a>
+    );
+  }
+  if (secondary.to) {
+    return (
+      <Link to={secondary.to} className={HERO_SECONDARY_BTN}>
+        {secondary.label}
+      </Link>
+    );
+  }
+  return null;
 }
 
 function SliderHero({ slides: slidesProp, className, sectionClassName }) {
-  const slides = slidesProp?.length ? slidesProp : DEFAULT_HERO_SLIDES;
+  const slides = useMemo(() => {
+    const list = slidesProp?.length ? slidesProp : DEFAULT_HERO_SLIDES;
+    return list.filter(Boolean);
+  }, [slidesProp]);
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, direction: 'rtl', align: 'start' });
   const [selectedIndex, setSelectedIndex] = useState(0);
 
@@ -107,7 +138,7 @@ function SliderHero({ slides: slidesProp, className, sectionClassName }) {
         <div className="iec-slider__container flex h-full w-full touch-pan-y">
           {slides.map((slide, index) => (
             <div
-              key={slide.id}
+              key={slide.id ?? `hero-slide-${index}`}
               className="iec-slider__slide relative h-full min-w-0 flex-[0_0_100%] w-full"
             >
               <div className="absolute inset-0">
@@ -136,9 +167,7 @@ function SliderHero({ slides: slidesProp, className, sectionClassName }) {
                   <p className="mb-8 text-xl font-light text-gray-200 md:text-2xl">{slide.subtitle}</p>
                   <div className="flex flex-wrap gap-4">
                     <HeroPrimaryCta primary={slide.primary} />
-                    <Link to={slide.secondary.to} className={HERO_SECONDARY_BTN}>
-                      {slide.secondary.label}
-                    </Link>
+                    <HeroSecondaryCta secondary={slide.secondary} />
                   </div>
                 </div>
               </div>
