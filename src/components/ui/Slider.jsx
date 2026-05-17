@@ -166,8 +166,6 @@ function SliderHero({ slides: slidesProp, className, sectionClassName }) {
                   <h2 className="mb-6 text-5xl font-bold leading-tight md:text-6xl">{slide.title}</h2>
                   <p className="mb-8 text-xl font-light text-gray-200 md:text-2xl">{slide.subtitle}</p>
                   <div className="flex flex-wrap gap-4">
-                    <HeroPrimaryCta primary={slide.primary} />
-                    <HeroSecondaryCta secondary={slide.secondary} />
                   </div>
                 </div>
               </div>

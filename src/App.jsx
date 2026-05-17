@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Home from './pages/home/Home.jsx';
 import DirectorWordPage from './pages/about-us/pages/administrative-board/DirectorWordPage.jsx';
+import ChairmanWordPage from './pages/about-us/pages/administrative-board/ChairmanWordPage.jsx';
 import BoardMembersPage from './pages/about-us/pages/administrative-board/BoardMembersPage.jsx';
 import HistoryPage from './pages/about-us/pages/history/HistoryPage.jsx';
 import ClubObjectivesPage from './pages/about-us/pages/objectives/ClubObjectivesPage.jsx';
@@ -53,6 +54,7 @@ function AppContent() {
       <div className="">
         <Routes location={location}>
           <Route path="/" element={<Home />} />
+          <Route path="/about/chairman-speech" element={<ChairmanWordPage />} />
           <Route path="/about/director-word" element={<DirectorWordPage />} />
           <Route path="/about/board-members" element={<BoardMembersPage />} />
           <Route path="/about/history" element={<HistoryPage />} />

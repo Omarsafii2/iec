@@ -136,6 +136,13 @@ export function Header() {
                             <div className="p-2">
                               <Link
                                 className={submenuItemClass}
+                                to="/about/chairman-speech"
+                                role="menuitem"
+                              >
+                                كلمة رئيس الهيئة الإدارية
+                              </Link>
+                              <Link
+                                className={submenuItemClass}
                                 to="/about/director-word"
                                 role="menuitem"
                               >
@@ -295,6 +302,13 @@ export function Header() {
                 من نحن
               </a>
               <div className="flex flex-col gap-1 pe-3 text-base font-semibold text-gray-200">
+                <Link
+                  to="/about/chairman-speech"
+                  onClick={() => setMobileOpen(false)}
+                  className="hover:text-[#897D56] py-1.5"
+                >
+                  كلمة رئيس الهيئة الإدارية
+                </Link>
                 <Link
                   to="/about/director-word"
                   onClick={() => setMobileOpen(false)}
