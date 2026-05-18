@@ -123,7 +123,7 @@ const Card = ({ variant = 'default', ...props }) => {
             </div>
           ) : null}
           <div className="iec-card__accent-bar h-1.5 w-full shrink-0 bg-[#897D56]" aria-hidden />
-          <div className="iec-card__body flex flex-1 flex-col p-6 justify-end">
+          <div className="iec-card__body flex flex-1 flex-col p-6">
             <div className="iec-card__date-row mb-3 flex items-center gap-2 text-sm font-bold text-[#897D56]">
               <Calendar size={16} strokeWidth={2} aria-hidden />
               <span className="iec-card__date">{props.date}</span>
@@ -131,11 +131,17 @@ const Card = ({ variant = 'default', ...props }) => {
             <h4 className="iec-card__title mb-3 text-xl font-bold text-gray-800 transition-colors group-hover:text-[#897D56]">
               {props.title}
             </h4>
-            <div className="iec-card__location flex items-center gap-2 text-sm text-gray-500">
-              <MapPin size={16} strokeWidth={2} aria-hidden />
-              <span>{props.location}</span>
+            {props.bodyHtml ? (
+              <div
+                className="iec-card__body-html prose prose-sm prose-stone mb-4 max-w-none text-gray-600 [&_a]:text-[#897D56] [&_p]:mb-2 [&_p:last-child]:mb-0 [&_ul]:my-2 [&_li]:my-0.5"
+                dangerouslySetInnerHTML={{ __html: props.bodyHtml }}
+              />
+            ) : null}
+            <div className="iec-card__location mb-1 flex items-start gap-2 text-sm text-gray-500">
+              <MapPin size={16} strokeWidth={2} className="mt-0.5 shrink-0" aria-hidden />
+              <span className="min-w-0">{props.location}</span>
             </div>
-            <div className="iec-card__contact mt-6 border-t border-gray-100 pt-4 text-center">
+            <div className="iec-card__contact mt-auto border-t border-gray-100 pt-4 text-center">
               <p className="iec-card__contact-label mb-1 text-sm text-gray-500">للتواصل والاستفسار</p>
               <p className="iec-card__phone text-lg font-bold text-[#897D56] dir-ltr" dir="ltr">
                 {props.phone}

@@ -16,6 +16,13 @@ const ACHIEVEMENTS_FILE_FIELDS = [
 
 // ─── 2. Transform ─────────────────────────────────────────────────────────────
 
+const stripHtmlToText = (html) =>
+  html
+    .replace(/<[^>]*>/g, '')
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
 const transformAchievement = (node) => {
   const attr = node.attributes;
 
@@ -31,18 +38,25 @@ const transformAchievement = (node) => {
       : `${Math.round(fileSizeBytes / 1024)} KB`
     : 'PDF';
 
-  // Year from field_date (e.g. "2026-04-15" → "2026")
-  const year = attr.field_date ? new Date(attr.field_date).getFullYear().toString() : '';
+  // Year: field_date when set, else created (many nodes omit field_date in JSON:API)
+  const dateForYear = attr.field_date || attr.created;
+  const year        = dateForYear ? new Date(dateForYear).getFullYear().toString() : '';
+  const sortTime    = dateForYear ? new Date(dateForYear).getTime() : 0;
 
-  // Description
-  const bodyHtml    = attr.body?.processed ?? attr.body?.value ?? '';
-  const description = bodyHtml.replace(/<[^>]*>/g, '').trim();
+  // Body: Drupal often returns body: null; when present use processed HTML; else optional summary (plain)
+  const bodyField   = attr.body;
+  const rawHtml     = (bodyField?.processed ?? bodyField?.value ?? '').trim();
+  const bodyHtml    = rawHtml;
+  const summaryText = (bodyField?.summary ?? '').trim();
+  const description = bodyHtml ? stripHtmlToText(bodyHtml) : summaryText;
 
   return {
     id:               node.id,
     title:            attr.title ?? '',
     description,
+    bodyHtml,
     year,
+    sortTime,
     fileUrl,
     downloadFilename: fileName,
     pdfMeta:          fileSizeLabel,
@@ -80,7 +94,7 @@ function AchievementsSkeleton() {
 
 // ─── 4. Sub-component ─────────────────────────────────────────────────────────
 
-function TimelineCard({ year, title, description, fileUrl, downloadFilename, pdfMeta }) {
+function TimelineCard({ year, title, description, bodyHtml, fileUrl, downloadFilename, pdfMeta }) {
   return (
     <div className="group relative" data-aos="fade-up">
       <div
@@ -94,7 +108,14 @@ function TimelineCard({ year, title, description, fileUrl, downloadFilename, pdf
           </span>
         </div>
         <h3 className="mb-2 text-xl font-bold text-[#564636]">{title}</h3>
-        <p className="mb-6 text-gray-600">{description}</p>
+        {bodyHtml?.trim() ? (
+          <div
+            className="iec-achievements-card__body prose prose-sm prose-stone mb-6 max-w-none text-gray-600 [&_a]:text-[#897D56] [&_p]:mb-3 [&_p:last-child]:mb-0 [&_ul]:my-2 [&_li]:my-0.5"
+            dangerouslySetInnerHTML={{ __html: bodyHtml }}
+          />
+        ) : description ? (
+          <p className="mb-6 whitespace-pre-wrap text-gray-600">{description}</p>
+        ) : null}
 
         {/* PDF row — only shown if a file exists */}
         {fileUrl && (
@@ -144,8 +165,7 @@ export function AchievementsSection() {
         const transformed = nodes
           .filter((n) => n.attributes.status)
           .map(transformAchievement)
-          // Sort newest first by year
-          .sort((a, b) => b.year.localeCompare(a.year));
+          .sort((a, b) => b.sortTime - a.sortTime);
 
         setItems(transformed);
       } catch (err) {
@@ -168,8 +188,8 @@ export function AchievementsSection() {
   return (
     <div className="container mx-auto px-4 py-20">
       <div className="relative mx-auto max-w-4xl space-y-16 border-r-2 border-[#897D56]/20 pr-10 mr-4 md:pr-14">
-        {items.map((item) => (
-          <TimelineCard key={item.id} {...item} />
+        {items.map(({ sortTime: _st, ...card }) => (
+          <TimelineCard key={card.id} {...card} />
         ))}
       </div>
     </div>

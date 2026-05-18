@@ -65,6 +65,7 @@ export function AcademyDetailContent({ academy }) {
                 variant="academyActivity"
                 date={act.date}
                 title={act.title}
+                bodyHtml={act.bodyHtml}
                 location={act.location}
                 phone={act.phone || academy.contactPhone}
                 image={act.image}

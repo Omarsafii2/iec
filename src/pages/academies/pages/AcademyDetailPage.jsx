@@ -114,6 +114,12 @@ const transformAcademy = (node) => {
       phone:     p.attributes?.field_phone_number ?? '',
       image:     image || null,
       imageAlt,
+      bodyHtml:
+        p.attributes?.field_body?.processed
+        ?? p.attributes?.field_body?.value
+        ?? p.attributes?.body?.processed
+        ?? p.attributes?.body?.value
+        ?? '',
     };
   });
 
