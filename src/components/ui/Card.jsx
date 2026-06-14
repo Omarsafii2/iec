@@ -46,9 +46,9 @@ const Card = ({ variant = 'default', ...props }) => {
             </div>
           </div>
           <div className="iec-card__body relative flex flex-1 flex-col p-6">
-            <div className="iec-card__icon-wrap absolute -top-6 start-6 z-20 flex size-12 items-center justify-center rounded-xl bg-[#897D56] text-white shadow-lg">
+            {/* <div className="iec-card__icon-wrap absolute -top-6 start-6 z-20 flex size-12 items-center justify-center rounded-xl bg-[#897D56] text-white shadow-lg">
               {props.icon}
-            </div>
+            </div> */}
             <h3 className="iec-card__title mb-3 mt-2 text-xl font-bold text-[#564636] transition-colors group-hover:text-[#897D56]">
               {props.title}
             </h3>
@@ -291,8 +291,11 @@ const Card = ({ variant = 'default', ...props }) => {
           }
           data-variant="objectives"
         >
-          <div className="iec-card__icon-wrap mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#564636]/5 text-[#564636] transition-colors duration-300 group-hover:bg-[#564636] group-hover:text-white">
-            {props.icon}
+          <div
+            className="iec-card__index mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#564636]/5 font-['Cairo',sans-serif] text-2xl font-extrabold tabular-nums text-[#564636] transition-colors duration-300 group-hover:bg-[#564636] group-hover:text-white"
+            aria-hidden
+          >
+            {String(props.index ?? '').padStart(2, '0')}
           </div>
           <h3 className="iec-card__title mb-4 text-2xl font-bold text-[#564636]">{props.title}</h3>
           <p className="iec-card__description text-lg leading-relaxed text-gray-600">{props.description}</p>

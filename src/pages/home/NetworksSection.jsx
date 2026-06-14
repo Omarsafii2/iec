@@ -98,7 +98,7 @@ export function NetworksSection() {
   if (!academicRow.length && !networkingRow.length) return null;
 
   return (
-    <section id="academies" className="relative z-10 -mt-24 bg-[#564636] py-20" dir="rtl">
+    <section id="academies" className="relative z-10  bg-[#564636] py-20" dir="rtl">
       <div className="container mx-auto px-4">
         <div className="mb-12 text-center">
           <h2 className="mb-4 text-3xl font-bold text-white">الشبكات والأكاديميات</h2>

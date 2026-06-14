@@ -1,29 +1,12 @@
 import { useEffect, useState } from 'react';
 import Card from '../../../../components/ui/Card.jsx';
 import { getNodes } from '../../../../services/api/drupalApi.js';
-import { DRUPAL_BASE_URL } from '../../../../services/api/axios.config.js';
 
-// ─── 1. Field config ──────────────────────────────────────────────────────────
-
-const GOALS_IMAGE_FIELDS = [
-  {
-    fieldName: 'field_icon',
-    mode: 'media',
-    mediaSourceField: 'field_media_image',
-  },
-];
-
-// ─── 2. Transform ─────────────────────────────────────────────────────────────
+// ─── 1. Transform ─────────────────────────────────────────────────────────────
 
 const transformGoal = (node) => {
   const attr = node.attributes;
 
-  // Icon image
-  const media   = node.field_icon_resolved;
-  const fileUri = media?.file?.attributes?.uri?.url ?? null;
-  const iconUrl = fileUri ? `${DRUPAL_BASE_URL}${fileUri}` : null;
-
-  // Description — strip HTML tags from body
   const bodyHtml    = attr.body?.processed ?? attr.body?.value ?? '';
   const description = bodyHtml.replace(/<[^>]*>/g, '').trim();
 
@@ -31,7 +14,6 @@ const transformGoal = (node) => {
     id:          node.id,
     title:       attr.title ?? '',
     description,
-    iconUrl,
   };
 };
 
@@ -43,7 +25,7 @@ function GoalsSkeleton() {
       <div className="mx-auto grid max-w-5xl grid-cols-1 gap-8 md:grid-cols-2">
         {Array.from({ length: 4 }).map((_, i) => (
           <div key={i} className="animate-pulse rounded-2xl bg-gray-100 p-6 space-y-4">
-            <div className="h-10 w-10 rounded-lg bg-gray-200" />
+            <div className="h-16 w-16 rounded-2xl bg-gray-200" />
             <div className="h-4 w-2/3 rounded bg-gray-200" />
             <div className="h-3 w-full rounded bg-gray-100" />
             <div className="h-3 w-4/5 rounded bg-gray-100" />
@@ -66,7 +48,7 @@ export function ObjectivesSection() {
 
     const load = async () => {
       try {
-        const nodes = await getNodes('club_goals', GOALS_IMAGE_FIELDS);
+        const nodes = await getNodes('club_goals');
         if (cancelled) return;
 
         const transformed = nodes
@@ -97,15 +79,11 @@ export function ObjectivesSection() {
         className="mx-auto grid max-w-5xl grid-cols-1 gap-8 md:grid-cols-2"
         data-aos="fade-up"
       >
-        {goals.map((goal) => (
+        {goals.map((goal, index) => (
           <Card
             key={goal.id}
             variant="objectives"
-            icon={
-              goal.iconUrl
-                ? <img src={goal.iconUrl} alt="" className="size-8 object-contain" aria-hidden />
-                : null
-            }
+            index={index + 1}
             title={goal.title}
             description={goal.description}
           />

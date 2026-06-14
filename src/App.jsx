@@ -17,6 +17,8 @@ import VideoArchivePage from './pages/news/pages/VideoArchivePage.jsx';
 import VideoAlbumDetailPage from './pages/news/pages/VideoAlbumDetailPage.jsx';
 import NewsListPage from './pages/news/pages/NewsListPage.jsx';
 import NewsDetailPage from './pages/news/pages/NewsDetailPage.jsx';
+import NewsFeedListPage from './pages/news/pages/NewsFeedListPage.jsx';
+import NewsFeedDetailPage from './pages/news/pages/NewsFeedDetailPage.jsx';
 import AcademyDetailPage from './pages/academies/pages/AcademyDetailPage.jsx';
 import AcademyNewsDetailPage from './pages/academies/pages/AcademyNewsDetailPage.jsx';
 import ProjectsListPage from './pages/projects/pages/ProjectsListPage.jsx';
@@ -69,6 +71,12 @@ function AppContent() {
           <Route path="/news/photos/:albumId" element={<PhotoAlbumDetailPage />} />
           <Route path="/news/videos" element={<VideoArchivePage />} />
           <Route path="/news/videos/:albumId" element={<VideoAlbumDetailPage />} />
+          <Route path="/news/initiatives" element={<NewsFeedListPage feedKey="initiatives" />} />
+          <Route path="/news/initiatives/:articleId" element={<NewsFeedDetailPage feedKey="initiatives" />} />
+          <Route path="/news/events" element={<NewsFeedListPage feedKey="events" />} />
+          <Route path="/news/events/:articleId" element={<NewsFeedDetailPage feedKey="events" />} />
+          <Route path="/news/activities" element={<NewsFeedListPage feedKey="activities" />} />
+          <Route path="/news/activities/:articleId" element={<NewsFeedDetailPage feedKey="activities" />} />
           <Route path="/news/news" element={<NewsListPage />} />
           <Route path="/news/news/:articleId" element={<NewsDetailPage />} />
           <Route path="/projects/:projectId" element={<ProjectDetailPage />} />

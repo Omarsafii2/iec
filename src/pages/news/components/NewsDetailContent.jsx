@@ -8,8 +8,8 @@ const articleBodyClass =
 /** صفحة تفاصيل الخبر (محتوى المقال) */
 export function NewsDetailContent({
   article,
-  backTo = '/news/news',
-  backLabel = 'العودة للأخبار',
+  backTo = '/news/activities',
+  backLabel = 'العودة للأنشطة',
 }) {
   const handleShare = useCallback(async () => {
     const url = window.location.href;

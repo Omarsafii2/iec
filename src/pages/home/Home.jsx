@@ -9,10 +9,10 @@ const Home = () => {
   return (
     <main>
       <HeroSlider />
-      <JoinSection />
       <NetworksSection />
-      <ProjectsSection />
       <VolunteerHourSection />
+      <ProjectsSection />
+      <JoinSection />
       <PartnersSection />
     </main>
   );

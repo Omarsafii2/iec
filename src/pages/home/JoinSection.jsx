@@ -110,7 +110,7 @@ export function JoinSection() {
           <div className="flex flex-col items-center gap-6">
             <Link
               to="/services/join"
-              className="group relative flex h-16 items-center justify-center gap-4 overflow-hidden rounded-2xl border-t border-white/20 bg-[#897D56] px-12 py-2 text-xl font-medium text-white shadow-[0_0_50px_-10px_rgba(137,125,86,0.6)] outline-none ring-offset-background transition-all duration-300 hover:scale-[1.02] hover:bg-[#756A45] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              className="group relative flex h-16 items-center justify-center gap-4 overflow-hidden rounded-2xl border-t border-white/20 bg-[#d4c5a0] px-12 py-2 text-xl font-medium text-white shadow-[0_0_50px_-10px_rgba(137,125,86,0.6)] outline-none ring-offset-background transition-all duration-300 hover:scale-[1.02] hover:bg-[#756A45] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             >
               <span className="absolute inset-0 -translate-x-full skew-x-12 bg-white/20 transition-transform duration-500 ease-out group-hover:translate-x-0" />
               <span className="relative z-10 font-bold">{ctaLabel}</span>

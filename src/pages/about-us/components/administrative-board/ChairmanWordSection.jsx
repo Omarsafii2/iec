@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Quote } from 'lucide-react';
 import { getNodes } from '../../../../services/api/drupalApi.js';
 import { DRUPAL_BASE_URL } from '../../../../services/api/axios.config.js';
+import { LeaderPortraitCard } from './LeaderPortraitCard.jsx';
 
 const CHAIRMAN_IMAGE_FIELDS = [
   {
@@ -48,7 +49,7 @@ function ChairmanSkeleton() {
     <div className="container mx-auto px-4 py-20 animate-pulse">
       <div className="grid items-start gap-12 lg:grid-cols-12">
         <div className="lg:col-span-5">
-          <div className="h-96 w-full rounded-2xl bg-gray-200" />
+          <div className="aspect-[4/5] w-full rounded-2xl bg-gray-200" />
         </div>
         <div className="lg:col-span-7 space-y-4 pt-4">
           <div className="h-7 w-2/5 rounded bg-gray-200" />
@@ -64,7 +65,7 @@ function ChairmanSkeleton() {
   );
 }
 
-export function ChairmanWordSection({ fallbackPortrait = '/images/secretary-general.png' }) {
+export function ChairmanWordSection({ fallbackPortrait = '/logo.png' }) {
   const [chairman, setChairman] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -103,32 +104,16 @@ export function ChairmanWordSection({ fallbackPortrait = '/images/secretary-gene
     bodyHtml = '',
   } = chairman ?? {};
 
-  const resolvedPortrait = portrait ?? fallbackPortrait;
-
   return (
     <div className="container mx-auto px-4 py-20">
       <div className="grid items-start gap-12 lg:grid-cols-12" data-aos="fade-up">
-        <div className="relative lg:col-span-5">
-          <div className="relative transform overflow-hidden rounded-2xl border-4 border-white shadow-2xl transition-transform duration-500 hover:rotate-0 lg:rotate-2">
-            <img
-              src={resolvedPortrait}
-              alt={portraitAlt}
-              className="h-auto w-full object-cover"
-              onError={(e) => {
-                e.currentTarget.src = fallbackPortrait;
-              }}
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" aria-hidden />
-            <div className="absolute bottom-6 right-6 text-white">
-              <p className="text-xl font-bold">{name}</p>
-              <p className="text-sm opacity-90">{role}</p>
-            </div>
-          </div>
-          <div
-            className="absolute -top-6 -right-6 -z-10 hidden h-full w-full rounded-2xl border-2 border-[#897D56]/20 lg:block"
-            aria-hidden
-          />
-        </div>
+        <LeaderPortraitCard
+          portrait={portrait}
+          portraitAlt={portraitAlt}
+          name={name}
+          role={role}
+          fallbackPortrait={fallbackPortrait}
+        />
 
         <div className="lg:col-span-7">
           <div className="relative rounded-3xl border border-gray-100 bg-white p-8 shadow-sm md:p-12">

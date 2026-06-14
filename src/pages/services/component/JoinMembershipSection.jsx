@@ -3,9 +3,6 @@ import { Send, UserPlus } from 'lucide-react';
 import { submitWebform } from '../../../services/api/drupalWebformApi.js';
 import './JoinMembershipSection.css';
 
-// ─── Terms from webform #text field ──────────────────────────────────────────
-// Extracted from the `terms` processed_text element in the webform schema
-
 const MEMBERSHIP_TERMS_HTML = `
   <h3>شروط التقدم لطلب الانتساب</h3>
   <ul>
@@ -17,23 +14,130 @@ const MEMBERSHIP_TERMS_HTML = `
   </ul>
 `;
 
-// ─── Initial form state ───────────────────────────────────────────────────────
+/** Applicant fields for Drupal webform `membership_application_form`. */
+const APPLICANT_KEYS = [
+  'full_name',
+  'birth_place',
+  'birth_day',
+  'birth_month',
+  'birth_year',
+  'years_study',
+  'graduation_year',
+  'islamic_college_graduate',
+  'profession',
+  'work_phone',
+  'home_phone',
+  'mobile_phone',
+  'fax',
+  'po_box',
+  'postal_code',
+  'email',
+  'hobbies',
+  'activities',
+  'biography',
+  'signature',
+];
 
-const INITIAL_FORM = {
-  full_name: '',
-  age:       '',
-  email:     '',
-  phone:     '',
-  message:   '',
-};
+const INITIAL_FORM = Object.fromEntries(APPLICANT_KEYS.map((k) => [k, '']));
 
-// ─── Component ────────────────────────────────────────────────────────────────
+const ISLAMIC_COLLEGE_OPTIONS = [
+  { value: 'yes', label: 'نعم' },
+  { value: 'no', label: 'لا' },
+];
+
+function getAgeFromBirth(day, month, year) {
+  const d = Number(day);
+  const m = Number(month);
+  const y = Number(year);
+  if (!d || !m || !y) return null;
+
+  const birth = new Date(y, m - 1, d);
+  if (Number.isNaN(birth.getTime())) return null;
+
+  const today = new Date();
+  let age = today.getFullYear() - birth.getFullYear();
+  const monthDiff = today.getMonth() - birth.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+    age -= 1;
+  }
+  return age;
+}
+
+function buildSubmissionPayload(form) {
+  const payload = {};
+  APPLICANT_KEYS.forEach((key) => {
+    if (form[key]?.toString().trim()) payload[key] = form[key];
+  });
+  return payload;
+}
+
+function TextField({
+  id,
+  name,
+  label,
+  value,
+  onChange,
+  disabled,
+  required = false,
+  type = 'text',
+  placeholder = '',
+  ltr = false,
+  ...inputProps
+}) {
+  const inputClass = ltr
+    ? 'join-membership-form__input join-membership-form__input--ltr'
+    : 'join-membership-form__input';
+
+  return (
+    <div className="join-membership-form__field">
+      <label htmlFor={id} className="join-membership-form__label">
+        {label}
+        {required && <span className="text-red-500"> *</span>}
+      </label>
+      <input
+        id={id}
+        name={name}
+        className={inputClass}
+        type={type}
+        placeholder={placeholder}
+        dir={ltr ? 'ltr' : undefined}
+        value={value}
+        onChange={onChange}
+        disabled={disabled}
+        {...inputProps}
+      />
+    </div>
+  );
+}
+
+function RadioGroup({ name, label, value, options, onChange, disabled }) {
+  return (
+    <fieldset className="join-membership-form__field">
+      <legend className="join-membership-form__label">{label}</legend>
+      <div className="join-membership-form__radios" role="radiogroup" aria-label={label}>
+        {options.map((opt) => (
+          <label key={opt.value} className="join-membership-form__radio-label">
+            <input
+              type="radio"
+              name={name}
+              value={opt.value}
+              checked={value === opt.value}
+              onChange={onChange}
+              disabled={disabled}
+            />
+            <span>{opt.label}</span>
+          </label>
+        ))}
+      </div>
+    </fieldset>
+  );
+}
 
 export function JoinMembershipSection() {
-  const [form, setForm]             = useState(INITIAL_FORM);
+  const [form, setForm] = useState(INITIAL_FORM);
   const [submitting, setSubmitting] = useState(false);
-  const [success, setSuccess]       = useState(false);
-  const [error, setError]           = useState('');
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -42,17 +146,34 @@ export function JoinMembershipSection() {
   };
 
   const handleSubmit = async () => {
-    // Client-side required validation
-    const required = ['full_name', 'age', 'email', 'phone', 'message'];
-    const missing  = required.find((k) => !form[k].toString().trim());
+    const required = [
+      'full_name',
+      'birth_day',
+      'birth_month',
+      'birth_year',
+      'mobile_phone',
+      'email',
+      'signature',
+    ];
+    const missing = required.find((k) => !form[k].toString().trim());
     if (missing) {
       setError('يرجى تعبئة جميع الحقول المطلوبة.');
       return;
     }
 
-    // Age minimum validation (Drupal sets #min: 18)
-    if (Number(form.age) < 18) {
-      setError('يجب أن يكون عمرك 18 عاماً على الأقل.');
+    const age = getAgeFromBirth(form.birth_day, form.birth_month, form.birth_year);
+    if (age === null) {
+      setError('يرجى إدخال تاريخ ميلاد صحيح.');
+      return;
+    }
+    if (age < 18) {
+      setError('يجب أن يكون عمرك 18 عاماً على الأقل وقت تقديم الطلب.');
+      return;
+    }
+
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(form.email.trim())) {
+      setError('يرجى إدخال بريد إلكتروني صحيح.');
       return;
     }
 
@@ -60,10 +181,7 @@ export function JoinMembershipSection() {
     setError('');
 
     try {
-      await submitWebform('membership_application_form', {
-        ...form,
-        age: Number(form.age), // send as number
-      });
+      await submitWebform('membership_application_form', buildSubmissionPayload(form));
       setSuccess(true);
       setForm(INITIAL_FORM);
     } catch (err) {
@@ -76,21 +194,21 @@ export function JoinMembershipSection() {
   return (
     <section className="join-membership-section" dir="rtl">
       <div className="container mx-auto px-4 py-20">
-        <div className="mx-auto max-w-3xl">
-          <div className="join-membership-card rounded-3xl border border-gray-100 bg-white p-8 shadow-sm md:p-12" data-aos="fade-up">
-
-            {/* Header */}
+        <div className="mx-auto max-w-4xl">
+          <div
+            className="join-membership-card rounded-3xl border border-gray-100 bg-white p-8 shadow-sm md:p-12"
+            data-aos="fade-up"
+          >
             <div className="mb-8 flex items-center gap-4 border-b border-gray-100 pb-8">
               <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-[#897D56]/10 text-[#897D56]">
                 <UserPlus size={32} strokeWidth={2} aria-hidden />
               </div>
               <div className="text-right">
-                <h2 className="text-2xl font-bold text-[#564636]">نموذج طلب العضوية</h2>
-                <p className="text-gray-500">يرجى تعبئة النموذج أدناه لتقديم طلب انتساب للنادي</p>
+                <h2 className="text-2xl font-bold text-[#564636]">طلب إنتساب</h2>
+                <p className="text-gray-500">نموذج طلب العضوية في نادي خريجي الكلية العلمية الإسلامية</p>
               </div>
             </div>
 
-            {/* Success state */}
             {success ? (
               <div className="flex flex-col items-center justify-center gap-4 rounded-2xl bg-green-50 p-12 text-center">
                 <div className="flex h-16 w-16 items-center justify-center rounded-full bg-green-100 text-green-600">
@@ -108,101 +226,316 @@ export function JoinMembershipSection() {
               </div>
             ) : (
               <div className="join-membership-form">
+                <div className="join-membership-letter">
+                  <p>السادة الهيئة الإدارية لنادي خريجي الكلية العلمية الإسلامية :</p>
+                  <p>تحية طيبة و بعد ،</p>
+                  <p>
+                    أتقدم إليكم بعد الاطلاع على نظام النادي و مراميه، و الرغبة بأن تقبلوني عضواً فيه،
+                    و أتعهد بأن أحترم قوانينه و قرارات الهيئة الإدارية.
+                  </p>
+                  <p>و تفضلوا بقبول فائق الإحترام ،،،</p>
+                </div>
 
-                {/* Full name */}
-                <div className="join-membership-form__field">
-                  <label htmlFor="join-full-name" className="join-membership-form__label">
-                    الاسم بالكامل <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    id="join-full-name"
-                    name="full_name"
-                    className="join-membership-form__input"
-                    type="text"
-                    placeholder="الاسم الرباعي"
-                    value={form.full_name}
+                <TextField
+                  id="join-full-name-ar"
+                  name="full_name"
+                  label="الإسم الكامل"
+                  placeholder="الاسم الرباعي"
+                  value={form.full_name}
+                  onChange={handleChange}
+                  disabled={submitting}
+                  required
+                />
+
+                <TextField
+                  id="join-full-name-en"
+                  name="full_name"
+                  label="Full Name"
+                  placeholder="Full Name"
+                  ltr
+                  value={form.full_name}
+                  onChange={handleChange}
+                  disabled={submitting}
+                />
+
+                <div className="join-membership-form__row join-membership-form__row--4">
+                  <TextField
+                    id="join-birth-place"
+                    name="birth_place"
+                    label="مكان الولادة"
+                    value={form.birth_place}
                     onChange={handleChange}
                     disabled={submitting}
                   />
-                </div>
-
-                {/* Age */}
-                <div className="join-membership-form__field">
-                  <label htmlFor="join-age" className="join-membership-form__label">
-                    العمر بالرقم <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    id="join-age"
-                    name="age"
-                    className="join-membership-form__input join-membership-form__input--ltr"
+                  <TextField
+                    id="join-birth-day"
+                    name="birth_day"
+                    label="اليوم"
                     type="number"
-                    min={18}
-                    placeholder="18"
-                    dir="ltr"
-                    value={form.age}
+                    min={1}
+                    max={31}
+                    ltr
+                    value={form.birth_day}
+                    onChange={handleChange}
+                    disabled={submitting}
+                    required
+                  />
+                  <TextField
+                    id="join-birth-month"
+                    name="birth_month"
+                    label="الشهر"
+                    type="number"
+                    min={1}
+                    max={12}
+                    ltr
+                    value={form.birth_month}
+                    onChange={handleChange}
+                    disabled={submitting}
+                    required
+                  />
+                  <TextField
+                    id="join-birth-year"
+                    name="birth_year"
+                    label="السنة"
+                    type="number"
+                    min={1940}
+                    max={new Date().getFullYear()}
+                    ltr
+                    value={form.birth_year}
+                    onChange={handleChange}
+                    disabled={submitting}
+                    required
+                  />
+                </div>
+
+                <TextField
+                  id="join-years-study"
+                  name="years_study"
+                  label="عدد سنوات الدراسة في الكلية العلمية الإسلامية"
+                  type="number"
+                  min={0}
+                  ltr
+                  value={form.years_study}
+                  onChange={handleChange}
+                  disabled={submitting}
+                />
+
+                <TextField
+                  id="join-graduation-year"
+                  name="graduation_year"
+                  label="سنة التخرج من المدرسة"
+                  type="number"
+                  ltr
+                  value={form.graduation_year}
+                  onChange={handleChange}
+                  disabled={submitting}
+                />
+
+                <RadioGroup
+                  name="islamic_college_graduate"
+                  label="هل كان تخرجك من الكلية العلمية الإسلامية"
+                  value={form.islamic_college_graduate}
+                  options={ISLAMIC_COLLEGE_OPTIONS}
+                  onChange={handleChange}
+                  disabled={submitting}
+                />
+
+                <TextField
+                  id="join-profession"
+                  name="profession"
+                  label="المهنة"
+                  value={form.profession}
+                  onChange={handleChange}
+                  disabled={submitting}
+                />
+
+                <div className="join-membership-form__row join-membership-form__row--3">
+                  <TextField
+                    id="join-work-phone"
+                    name="work_phone"
+                    label="تلفون العمل"
+                    type="tel"
+                    ltr
+                    value={form.work_phone}
+                    onChange={handleChange}
+                    disabled={submitting}
+                  />
+                  <TextField
+                    id="join-home-phone"
+                    name="home_phone"
+                    label="تلفون المنزل"
+                    type="tel"
+                    ltr
+                    value={form.home_phone}
+                    onChange={handleChange}
+                    disabled={submitting}
+                  />
+                  <TextField
+                    id="join-mobile-phone"
+                    name="mobile_phone"
+                    label="الخليوي"
+                    type="tel"
+                    placeholder="0790000000"
+                    ltr
+                    value={form.mobile_phone}
+                    onChange={handleChange}
+                    disabled={submitting}
+                    required
+                  />
+                </div>
+
+                <div className="join-membership-form__row join-membership-form__row--3">
+                  <TextField
+                    id="join-fax"
+                    name="fax"
+                    label="فاكس"
+                    type="tel"
+                    ltr
+                    value={form.fax}
+                    onChange={handleChange}
+                    disabled={submitting}
+                  />
+                  <TextField
+                    id="join-po-box"
+                    name="po_box"
+                    label="صندوق بريد"
+                    ltr
+                    value={form.po_box}
+                    onChange={handleChange}
+                    disabled={submitting}
+                  />
+                  <TextField
+                    id="join-postal-code"
+                    name="postal_code"
+                    label="الرمز البريدي"
+                    ltr
+                    value={form.postal_code}
                     onChange={handleChange}
                     disabled={submitting}
                   />
                 </div>
 
-                {/* Email + Phone row */}
+                <TextField
+                  id="join-email-ar"
+                  name="email"
+                  label="البريد الإلكتروني"
+                  type="email"
+                  placeholder="example@email.com"
+                  ltr
+                  value={form.email}
+                  onChange={handleChange}
+                  disabled={submitting}
+                  required
+                />
+
+                <TextField
+                  id="join-email-en"
+                  name="email"
+                  label="Email"
+                  type="email"
+                  ltr
+                  value={form.email}
+                  onChange={handleChange}
+                  disabled={submitting}
+                />
+
                 <div className="join-membership-form__row">
-                  <div className="join-membership-form__field">
-                    <label htmlFor="join-email" className="join-membership-form__label">
-                      البريد الإلكتروني <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      id="join-email"
-                      name="email"
-                      className="join-membership-form__input join-membership-form__input--ltr"
-                      type="email"
-                      placeholder="example@email.com"
-                      dir="ltr"
-                      value={form.email}
-                      onChange={handleChange}
-                      disabled={submitting}
-                    />
-                  </div>
-                  <div className="join-membership-form__field">
-                    <label htmlFor="join-phone" className="join-membership-form__label">
-                      رقم الهاتف <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      id="join-phone"
-                      name="phone"
-                      className="join-membership-form__input join-membership-form__input--ltr"
-                      type="tel"
-                      placeholder="0790000000"
-                      dir="ltr"
-                      value={form.phone}
-                      onChange={handleChange}
-                      disabled={submitting}
-                    />
-                  </div>
+                  <TextField
+                    id="join-hobbies"
+                    name="hobbies"
+                    label="الهوايات"
+                    value={form.hobbies}
+                    onChange={handleChange}
+                    disabled={submitting}
+                  />
+                  <TextField
+                    id="join-activities"
+                    name="activities"
+                    label="النشاطات"
+                    value={form.activities}
+                    onChange={handleChange}
+                    disabled={submitting}
+                  />
                 </div>
 
-                {/* Message */}
                 <div className="join-membership-form__field">
-                  <label htmlFor="join-message" className="join-membership-form__label">
-                    الرسالة <span className="text-red-500">*</span>
+                  <label htmlFor="join-biography" className="join-membership-form__label">
+                    السيرة الذاتية
                   </label>
                   <textarea
-                    id="join-message"
-                    name="message"
+                    id="join-biography"
+                    name="biography"
                     className="join-membership-form__textarea"
-                    placeholder="اكتب رسالتك هنا..."
-                    value={form.message}
+                    rows={4}
+                    placeholder="اكتب نبذة عنك..."
+                    value={form.biography}
                     onChange={handleChange}
                     disabled={submitting}
                   />
                 </div>
 
-                {/* Error */}
+                <TextField
+                  id="join-signature"
+                  name="signature"
+                  label="التوقيع"
+                  placeholder="الاسم كتوقيع"
+                  value={form.signature}
+                  onChange={handleChange}
+                  disabled={submitting}
+                  required
+                />
+
+                <div className="join-membership-form__admin" aria-label="لاستعمال الهيئة الإدارية">
+                  <p className="join-membership-form__admin-heading">لاستعمال الهيئة الإدارية</p>
+
+                  <TextField
+                    id="join-admin-meeting-date"
+                    label="إجتمعت الهيئة الإدارية بتاريخ ... و تقرر قبول / عدم قبول"
+                    value=""
+                    onChange={() => {}}
+                    disabled
+                  />
+
+                  <TextField
+                    id="join-member-name"
+                    label="عضواً : عاملاً    مؤازراً    فخرياً"
+                    value=""
+                    onChange={() => {}}
+                    disabled
+                  />
+
+                  <div className="join-membership-form__row">
+                    <TextField
+                      id="join-membership-fee-receipt"
+                      label="سددت رسوم الإنتساب بإيصال رقم"
+                      value=""
+                      onChange={() => {}}
+                      disabled
+                    />
+                    <TextField
+                      id="join-membership-fee-date"
+                      label="تاريخ"
+                      value=""
+                      onChange={() => {}}
+                      disabled
+                    />
+                  </div>
+
+                  <TextField
+                    id="join-membership-number"
+                    label="رقم العضوية"
+                    value=""
+                    onChange={() => {}}
+                    disabled
+                  />
+
+                  <p className="join-membership-form__admin-footer">رئيس الهيئة الإدارية</p>
+                </div>
+
                 {error && (
-                  <p className="mb-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">{error}</p>
+                  <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">{error}</p>
                 )}
 
-                {/* Submit */}
                 <div className="join-membership-form__actions">
                   <button
                     type="button"
@@ -210,14 +543,13 @@ export function JoinMembershipSection() {
                     onClick={handleSubmit}
                     disabled={submitting}
                   >
-                    <span>{submitting ? 'جارٍ الإرسال...' : 'إرسال طلب'}</span>
+                    <span>{submitting ? 'جارٍ الإرسال...' : 'إرسال الطلب'}</span>
                     {!submitting && <Send size={18} strokeWidth={2} aria-hidden />}
                   </button>
                 </div>
               </div>
             )}
 
-            {/* Terms — from webform `terms` processed_text field */}
             <div
               className="mt-12 border-t border-gray-100 pt-8 text-right text-sm leading-relaxed text-gray-600
                 [&_h3]:mb-6 [&_h3]:text-xl [&_h3]:font-bold [&_h3]:text-[#564636]

@@ -88,13 +88,13 @@ export function Footer() {
                 <FooterNavLink to="/about/board-members">الهيئة الإدارية</FooterNavLink>
               </li>
               <li>
-                <FooterNavLink to="/news/photos">أرشيف الصور</FooterNavLink>
+                <FooterNavLink to="/news/initiatives">المبادرات</FooterNavLink>
               </li>
               <li>
-                <FooterNavLink to="/news/videos">مكتبة الفيديو</FooterNavLink>
+                <FooterNavLink to="/news/events">الفعاليات</FooterNavLink>
               </li>
               <li>
-                <FooterNavLink to="/news/news">أخبار النادي</FooterNavLink>
+                <FooterNavLink to="/news/activities">الأنشطة</FooterNavLink>
               </li>
               <li>
                 <FooterNavLink to="/faq">الأسئلة الشائعة</FooterNavLink>
