@@ -107,7 +107,13 @@ function SliderHero({ slides: slidesProp, className, sectionClassName }) {
     const list = slidesProp?.length ? slidesProp : DEFAULT_HERO_SLIDES;
     return list.filter(Boolean);
   }, [slidesProp]);
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, direction: 'rtl', align: 'start' });
+  const canLoop = slides.length > 1;
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    loop: canLoop,
+    direction: 'rtl',
+    align: 'start',
+    watchSlides: true,
+  });
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   const onSelect = useCallback(() => {
@@ -126,13 +132,25 @@ function SliderHero({ slides: slidesProp, className, sectionClassName }) {
     };
   }, [emblaApi, onSelect]);
 
+  useEffect(() => {
+    if (!emblaApi) return;
+    emblaApi.reInit({ loop: canLoop, direction: 'rtl', align: 'start', watchSlides: true });
+  }, [emblaApi, slides, canLoop]);
+
+  useEffect(() => {
+    if (!emblaApi || !canLoop) return;
+    const interval = window.setInterval(() => emblaApi.scrollNext(), 6000);
+    return () => window.clearInterval(interval);
+  }, [emblaApi, canLoop]);
+
   const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
   const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
+  const scrollTo = useCallback((index) => emblaApi?.scrollTo(index), [emblaApi]);
 
   return (
     <section
       className={`iec-slider iec-slider--hero relative h-[100dvh] overflow-hidden bg-gray-900 ${sectionClassName || ''}`}
-      dir="ltr"
+      dir="rtl"
     >
       <div className={`embla iec-slider__viewport h-full w-full overflow-hidden ${className || ''}`} ref={emblaRef}>
         <div className="iec-slider__container flex h-full w-full touch-pan-y">
@@ -147,14 +165,14 @@ function SliderHero({ slides: slidesProp, className, sectionClassName }) {
                   alt={slide.alt}
                   className="h-full w-full object-cover opacity-60"
                   style={{ objectPosition: 'center 0%' }}
-                  loading={index === 0 ? 'eager' : 'lazy'}
+                  loading="eager"
                   decoding="async"
                 />
                 {/* <div className="absolute inset-0 bg-gradient-to-t from-[#564636] via-[#564636]/50 to-transparent" /> */}
               </div>
-              <div className="relative z-10 container mx-auto flex h-full flex-col items-end justify-center px-8 text-white md:px-24">
+              <div className="relative z-10 container mx-auto flex h-full w-full flex-col items-start justify-center px-8 text-white md:px-24">
                 <div
-                  className={`iec-slider__content max-w-2xl transition-all duration-700 ease-out ${
+                  className={`iec-slider__content max-w-2xl text-right transition-all duration-700 ease-out ${
                     index === selectedIndex ? 'translate-y-0 opacity-100' : 'translate-y-5 opacity-0'
                   }`}
                 >
@@ -174,7 +192,25 @@ function SliderHero({ slides: slidesProp, className, sectionClassName }) {
         </div>
       </div>
 
-      <div className="iec-slider__nav-bar absolute inset-x-0 bottom-8 z-20 flex items-center justify-center gap-4 px-4 md:contents">
+      {canLoop ? (
+        <div className="iec-slider__dots absolute inset-x-0 bottom-24 z-20 flex justify-center gap-2 px-4">
+          {slides.map((slide, index) => (
+            <button
+              key={`${slide.id}-dot`}
+              type="button"
+              className={`h-2.5 rounded-full transition-all ${
+                index === selectedIndex ? 'w-8 bg-white' : 'w-2.5 bg-white/40 hover:bg-white/70'
+              }`}
+              onClick={() => scrollTo(index)}
+              aria-label={`الانتقال إلى الشريحة ${index + 1}`}
+              aria-current={index === selectedIndex ? 'true' : undefined}
+            />
+          ))}
+        </div>
+      ) : null}
+
+      {canLoop ? (
+        <div className="iec-slider__nav-bar absolute inset-x-0 bottom-8 z-20 flex items-center justify-center gap-4 px-4 md:contents">
         <button
           type="button"
           className="iec-slider__nav iec-slider__nav--next rounded-full border border-white/20 bg-white/10 p-2 text-white backdrop-blur-sm transition-all hover:bg-white/20 md:absolute md:left-8 md:top-1/2 md:-translate-y-1/2 md:left-16"
@@ -191,7 +227,8 @@ function SliderHero({ slides: slidesProp, className, sectionClassName }) {
         >
           <ArrowRight size={32} strokeWidth={2} />
         </button>
-      </div>
+        </div>
+      ) : null}
     </section>
   );
 }
