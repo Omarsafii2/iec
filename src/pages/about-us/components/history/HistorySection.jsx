@@ -124,8 +124,8 @@ function TopSection({ node }) {
                   {mainText}
                 </p>
               )}
-              {desc1 && <p className="mb-6 leading-relaxed">{desc1}</p>}
-              {desc2 && <p className="leading-relaxed">{desc2}</p>}
+              {desc1 && <p className="mb-8 border-b border-gray-100 pb-8 text-xl leading-loose font-bold text-[#564636]">{desc1}</p>}
+              {desc2 && <p className="mb-8 border-b border-gray-100 pb-8 text-xl leading-loose font-bold text-[#564636]">{desc2}</p>}
             </div>
           </div>
 

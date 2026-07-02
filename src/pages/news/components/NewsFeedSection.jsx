@@ -36,7 +36,7 @@ export function NewsFeedSection({ feedKey }) {
 
     const load = async () => {
       try {
-        const nodes = await getNodes('news', NEWS_IMAGE_FIELDS);
+        const nodes = await getNodes('news', NEWS_IMAGE_FIELDS, { status: 1 });
         if (cancelled) return;
 
         const transformed = filterNewsByFeed(nodes, feedKey).map(transformNewsListItem);

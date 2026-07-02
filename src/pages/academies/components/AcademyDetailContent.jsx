@@ -18,7 +18,7 @@ function SectionTitle({ children, id }) {
 /** صفحة تفاصيل أكاديمية / شبكة */
 export function AcademyDetailContent({ academy }) {
   // activitiesLabel: "الدورات والأنشطة" for Academic, "الفعاليات والمبادرات" for Networking
-  const activitiesLabel = academy.activitiesLabel ?? 'الدورات والأنشطة';
+  const activitiesLabel = "شركاؤنا" ?? 'الدورات والأنشطة';
 
   return (
     <div className="iec-academy-detail container mx-auto px-4 py-16">

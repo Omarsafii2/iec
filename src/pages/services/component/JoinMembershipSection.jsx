@@ -28,11 +28,11 @@ const APPLICANT_KEYS = [
   'work_phone',
   'home_phone',
   'mobile_phone',
-  'fax',
-  'po_box',
-  'postal_code',
+  // 'fax',
+  // 'po_box',
+  // 'postal_code',
   'email',
-  'hobbies',
+  // 'hobbies',
   'activities',
   'biography',
   'signature',
@@ -384,7 +384,7 @@ export function JoinMembershipSection() {
                   />
                 </div>
 
-                <div className="join-membership-form__row join-membership-form__row--3">
+                {/* <div className="join-membership-form__row join-membership-form__row--3">
                   <TextField
                     id="join-fax"
                     name="fax"
@@ -413,7 +413,7 @@ export function JoinMembershipSection() {
                     onChange={handleChange}
                     disabled={submitting}
                   />
-                </div>
+                </div> */}
 
                 <TextField
                   id="join-email-ar"
@@ -440,14 +440,14 @@ export function JoinMembershipSection() {
                 />
 
                 <div className="join-membership-form__row">
-                  <TextField
+                  {/* <TextField
                     id="join-hobbies"
                     name="hobbies"
                     label="الهوايات"
                     value={form.hobbies}
                     onChange={handleChange}
                     disabled={submitting}
-                  />
+                  /> */}
                   <TextField
                     id="join-activities"
                     name="activities"

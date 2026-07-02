@@ -1,6 +1,6 @@
 import { DRUPAL_BASE_URL } from '../../../services/api/axios.config.js';
 
-/** Drupal machine name (max 32 chars). */
+/** Drupal list field machine name (max 32 chars). */
 export const NEWS_CLASSIFICATION_FIELD = 'field_initiatives_events_activit';
 
 export const NEWS_IMAGE_FIELDS = [
@@ -38,39 +38,58 @@ export const NEWS_FEEDS = {
   },
 };
 
+/**
+ * Exact `field_initiatives_events_activit` values from Drupal JSON:API.
+ * - initiatives: `initiatives_events_activities` (CMS list key; not plain `initiatives`)
+ * - events: `events`
+ * - activities: `activities`
+ */
+export const DRUPAL_CLASSIFICATION_BY_FEED = {
+  initiatives: ['initiatives', 'initiatives_events_activities'],
+  events: ['events'],
+  activities: ['activities'],
+};
+
 const CLASSIFICATION_ALIASES = {
-  initiatives: ['initiatives', 'initiative', 'mubadrat', 'mubadarat', 'المبادرات', 'مبادرات'],
-  events:      ['events', 'event', 'faaliyat', 'faaliya', 'الفعاليات', 'فعاليات'],
-  activities:  ['activities', 'activity', 'anshita', 'anshiyah', 'الأنشطة', 'أنشطة'],
+  initiatives: ['initiative', 'mubadrat', 'mubadarat', 'المبادرات', 'مبادرات'],
+  events:      ['event', 'faaliyat', 'faaliya', 'الفعاليات', 'فعاليات'],
+  activities:  ['activity', 'anshita', 'anshiyah', 'الأنشطة', 'أنشطة'],
 };
 
 export function getNewsFeedConfig(feedKey) {
   return NEWS_FEEDS[feedKey] ?? null;
 }
 
+/** Read classification from a news node attributes. */
+export function getNewsClassification(node) {
+  const value = node?.attributes?.[NEWS_CLASSIFICATION_FIELD];
+  if (value == null || value === '') return null;
+  return String(value).trim();
+}
+
 export function matchesNewsClassification(rawValue, feedKey) {
-  const config = getNewsFeedConfig(feedKey);
-  if (!config || rawValue == null || rawValue === '') return false;
+  if (!getNewsFeedConfig(feedKey) || rawValue == null || rawValue === '') return false;
 
   const normalized = String(rawValue).trim().toLowerCase();
-  const aliases = CLASSIFICATION_ALIASES[feedKey] ?? [];
+  const drupalValues = (DRUPAL_CLASSIFICATION_BY_FEED[feedKey] ?? []).map((v) => v.toLowerCase());
+  const aliases = (CLASSIFICATION_ALIASES[feedKey] ?? []).map((v) => v.toLowerCase());
+  const config = getNewsFeedConfig(feedKey);
+
   return (
-    normalized === config.classification
-    || aliases.some((alias) => alias.toLowerCase() === normalized)
+    drupalValues.includes(normalized)
+    || normalized === config.classification
+    || aliases.includes(normalized)
   );
 }
 
 export function isClubNewsNode(node) {
-  return node?.attributes?.status
+  return Boolean(node?.attributes?.status)
     && node?.relationships?.field_networking_and_academic?.data == null;
 }
 
 export function filterNewsByFeed(nodes, feedKey) {
   return nodes.filter(
-    (node) => isClubNewsNode(node) && matchesNewsClassification(
-      node.attributes?.[NEWS_CLASSIFICATION_FIELD],
-      feedKey,
-    ),
+    (node) => isClubNewsNode(node) && matchesNewsClassification(getNewsClassification(node), feedKey),
   );
 }
 
@@ -104,7 +123,7 @@ export function transformNewsListItem(node) {
     image:          fileUri ? `${DRUPAL_BASE_URL}${fileUri}` : NEWS_PLACEHOLDER_IMAGE,
     imageAlt:       attr.title ?? '',
     category:       attr.field_tag ?? '',
-    classification: attr[NEWS_CLASSIFICATION_FIELD] ?? null,
+    classification: getNewsClassification(node),
   };
 }
 
@@ -120,7 +139,7 @@ export function transformNewsDetailItem(node) {
     image:          fileUri ? `${DRUPAL_BASE_URL}${fileUri}` : NEWS_PLACEHOLDER_IMAGE,
     imageAlt:       attr.title ?? '',
     category:       attr.field_tag ?? '',
-    classification: attr[NEWS_CLASSIFICATION_FIELD] ?? null,
+    classification: getNewsClassification(node),
     bodyHtml:       attr.body?.processed ?? attr.body?.value ?? '',
   };
 }

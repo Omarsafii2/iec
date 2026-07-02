@@ -4,8 +4,8 @@ import { InnerPageHero } from '../../../components/common/InnerPageHero.jsx';
 import { NewsDetailContent } from '../components/NewsDetailContent.jsx';
 import { getNode } from '../../../services/api/drupalApi.js';
 import {
-  NEWS_CLASSIFICATION_FIELD,
   NEWS_IMAGE_FIELDS,
+  getNewsClassification,
   getNewsFeedConfig,
   isClubNewsNode,
   matchesNewsClassification,
@@ -58,7 +58,7 @@ export default function NewsFeedDetailPage({ feedKey }) {
         if (
           !node
           || !isClubNewsNode(node)
-          || !matchesNewsClassification(node.attributes?.[NEWS_CLASSIFICATION_FIELD], feedKey)
+          || !matchesNewsClassification(getNewsClassification(node), feedKey)
         ) {
           setError(new Error('not_found'));
           return;

@@ -288,8 +288,7 @@ export function Header() {
                       </Link>
                       <Link className={submenuItemClass} to="/news/activities" role="menuitem">
                         <Newspaper className="size-[18px] shrink-0 text-[#897D56]" strokeWidth={2} aria-hidden />
-                        الدورات والانشطة
-                   
+                        IEC Talks
                       </Link>
                     </div>
                   </div>

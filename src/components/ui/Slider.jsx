@@ -152,7 +152,7 @@ function SliderHero({ slides: slidesProp, className, sectionClassName }) {
                 />
                 {/* <div className="absolute inset-0 bg-gradient-to-t from-[#564636] via-[#564636]/50 to-transparent" /> */}
               </div>
-              <div className="relative z-10 container mx-auto flex h-full flex-col items-start justify-center px-8 text-white md:px-24">
+              <div className="relative z-10 container mx-auto flex h-full flex-col items-end justify-center px-8 text-white md:px-24">
                 <div
                   className={`iec-slider__content max-w-2xl transition-all duration-700 ease-out ${
                     index === selectedIndex ? 'translate-y-0 opacity-100' : 'translate-y-5 opacity-0'
@@ -163,8 +163,8 @@ function SliderHero({ slides: slidesProp, className, sectionClassName }) {
                       {slide.badge}
                     </div>
                   ) : null}
-                  <h2 className="mb-6 text-5xl font-bold leading-tight md:text-6xl">{slide.title}</h2>
-                  <p className="mb-8 text-xl font-light text-gray-200 md:text-2xl">{slide.subtitle}</p>
+                  <h2 className="mb-6 text-5xl font-bold leading-tight md:text-6xl text-right">{slide.title}</h2>
+                  <p className="mb-8 text-xl font-light text-gray-200 md:text-2xl text-right">{slide.subtitle}</p>
                   <div className="flex flex-wrap gap-4">
                   </div>
                 </div>
