@@ -131,8 +131,8 @@ function SliderHero({ slides: slidesProp, className, sectionClassName }) {
 
   return (
     <section
-      className={`iec-slider iec-slider--hero relative h-[900px] overflow-hidden bg-gray-900 ${sectionClassName || ''}`}
-      dir="rtl"
+      className={`iec-slider iec-slider--hero relative h-[100dvh] overflow-hidden bg-gray-900 ${sectionClassName || ''}`}
+      dir="ltr"
     >
       <div className={`embla iec-slider__viewport h-full w-full overflow-hidden ${className || ''}`} ref={emblaRef}>
         <div className="iec-slider__container flex h-full w-full touch-pan-y">
@@ -150,9 +150,9 @@ function SliderHero({ slides: slidesProp, className, sectionClassName }) {
                   loading={index === 0 ? 'eager' : 'lazy'}
                   decoding="async"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#564636] via-[#564636]/50 to-transparent" />
+                {/* <div className="absolute inset-0 bg-gradient-to-t from-[#564636] via-[#564636]/50 to-transparent" /> */}
               </div>
-              <div className="relative z-10 container mx-auto flex h-full flex-col items-start justify-center px-8 text-white md:px-24">
+              <div className="relative z-10 container mx-auto flex h-full flex-col items-end justify-center px-8 text-white md:px-24">
                 <div
                   className={`iec-slider__content max-w-2xl transition-all duration-700 ease-out ${
                     index === selectedIndex ? 'translate-y-0 opacity-100' : 'translate-y-5 opacity-0'
@@ -163,11 +163,9 @@ function SliderHero({ slides: slidesProp, className, sectionClassName }) {
                       {slide.badge}
                     </div>
                   ) : null}
-                  <h2 className="mb-6 text-5xl font-bold leading-tight md:text-6xl">{slide.title}</h2>
-                  <p className="mb-8 text-xl font-light text-gray-200 md:text-2xl">{slide.subtitle}</p>
+                  <h2 className="mb-6 text-5xl font-bold leading-tight md:text-6xl text-right">{slide.title}</h2>
+                  <p className="mb-8 text-xl font-light text-gray-200 md:text-2xl text-right">{slide.subtitle}</p>
                   <div className="flex flex-wrap gap-4">
-                    <HeroPrimaryCta primary={slide.primary} />
-                    <HeroSecondaryCta secondary={slide.secondary} />
                   </div>
                 </div>
               </div>
@@ -176,22 +174,24 @@ function SliderHero({ slides: slidesProp, className, sectionClassName }) {
         </div>
       </div>
 
-      <button
-        type="button"
-        className="iec-slider__nav iec-slider__nav--next absolute left-8 top-1/2 z-20 -translate-y-1/2 rounded-full border border-white/20 bg-white/10 p-2 text-white backdrop-blur-sm transition-all hover:bg-white/20 md:left-16"
-        onClick={scrollNext}
-        aria-label="الشريحة التالية"
-      >
-        <ArrowLeft size={32} strokeWidth={2} />
-      </button>
-      <button
-        type="button"
-        className="iec-slider__nav iec-slider__nav--prev absolute right-8 top-1/2 z-20 -translate-y-1/2 rounded-full border border-white/20 bg-white/10 p-2 text-white backdrop-blur-sm transition-all hover:bg-white/20 md:right-16"
-        onClick={scrollPrev}
-        aria-label="الشريحة السابقة"
-      >
-        <ArrowRight size={32} strokeWidth={2} />
-      </button>
+      <div className="iec-slider__nav-bar absolute inset-x-0 bottom-8 z-20 flex items-center justify-center gap-4 px-4 md:contents">
+        <button
+          type="button"
+          className="iec-slider__nav iec-slider__nav--next rounded-full border border-white/20 bg-white/10 p-2 text-white backdrop-blur-sm transition-all hover:bg-white/20 md:absolute md:left-8 md:top-1/2 md:-translate-y-1/2 md:left-16"
+          onClick={scrollNext}
+          aria-label="الشريحة التالية"
+        >
+          <ArrowLeft size={32} strokeWidth={2} />
+        </button>
+        <button
+          type="button"
+          className="iec-slider__nav iec-slider__nav--prev rounded-full border border-white/20 bg-white/10 p-2 text-white backdrop-blur-sm transition-all hover:bg-white/20 md:absolute md:right-8 md:top-1/2 md:-translate-y-1/2 md:right-16"
+          onClick={scrollPrev}
+          aria-label="الشريحة السابقة"
+        >
+          <ArrowRight size={32} strokeWidth={2} />
+        </button>
+      </div>
     </section>
   );
 }

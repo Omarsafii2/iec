@@ -13,10 +13,82 @@
   gap: 24px;
 }
 
+.join-membership-form__section-title {
+  margin: 8px 0 0;
+  padding-top: 8px;
+  border-top: 1px solid #f3f4f6;
+  color: #564636;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.join-membership-form__section-title:first-child {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+}
+
 .join-membership-form__row {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 24px;
+}
+
+.join-membership-form__row--3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.join-membership-form__row--4 {
+  grid-template-columns: 1.4fr repeat(3, minmax(0, 1fr));
+}
+
+.join-membership-letter {
+  margin-bottom: 28px;
+  text-align: right;
+  color: #374151;
+  font-size: 15px;
+  line-height: 1.9;
+}
+
+.join-membership-letter__title {
+  margin: 0 0 20px;
+  text-align: center;
+  color: #564636;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.join-membership-letter p {
+  margin: 0 0 10px;
+}
+
+.join-membership-form__admin {
+  margin-top: 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 16px;
+  background: #f9fafb;
+  padding: 20px 24px;
+}
+
+.join-membership-form__admin-heading {
+  margin: 0 0 16px;
+  color: #6b7280;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.join-membership-form__admin-footer {
+  margin: 16px 0 0;
+  text-align: left;
+  color: #564636;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.join-membership-form__input:disabled {
+  background: #f3f4f6;
+  color: #9ca3af;
+  cursor: not-allowed;
 }
 
 .join-membership-form__field {
@@ -70,6 +142,28 @@
   text-align: left;
 }
 
+.join-membership-form__radios {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 24px;
+}
+
+.join-membership-form__radio-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #564636;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.join-membership-form__radio-label input {
+  accent-color: #897d56;
+  width: 18px;
+  height: 18px;
+}
+
 .join-membership-form__actions {
   padding-top: 4px;
 }
@@ -92,8 +186,13 @@
   cursor: pointer;
 }
 
-.join-membership-form__button:hover {
+.join-membership-form__button:hover:not(:disabled) {
   background: #3e3226;
+}
+
+.join-membership-form__button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
 }
 
 @media (max-width: 640px) {
@@ -101,7 +200,9 @@
     gap: 20px;
   }
 
-  .join-membership-form__row {
+  .join-membership-form__row,
+  .join-membership-form__row--3,
+  .join-membership-form__row--4 {
     grid-template-columns: 1fr;
     gap: 20px;
   }

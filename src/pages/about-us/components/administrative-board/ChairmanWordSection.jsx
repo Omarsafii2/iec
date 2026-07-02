@@ -4,9 +4,7 @@ import { getNodes } from '../../../../services/api/drupalApi.js';
 import { DRUPAL_BASE_URL } from '../../../../services/api/axios.config.js';
 import { LeaderPortraitCard } from './LeaderPortraitCard.jsx';
 
-// ─── Image field config ───────────────────────────────────────────────────────
-
-const DIRECTOR_IMAGE_FIELDS = [
+const CHAIRMAN_IMAGE_FIELDS = [
   {
     fieldName: 'field_media_image',
     mode: 'media',
@@ -14,48 +12,39 @@ const DIRECTOR_IMAGE_FIELDS = [
   },
 ];
 
-// ─── Transform ────────────────────────────────────────────────────────────────
-
 /**
- * Transforms a raw Drupal `secretary_general_s_speech` node into the shape
- * DirectorWordSection expects:
- * {
- *   id, name, role, heading, portrait, portraitAlt, bioItems, bodyHtml
- * }
+ * Drupal `chairman_s_speech` → same layout shape as DirectorWordSection
  */
-const transformDirectorNode = (node) => {
+const transformChairmanNode = (node) => {
   const attr = node.attributes;
 
-  // ── Portrait image ────────────────────────────────────────────────────────
-  const media      = node.field_media_image_resolved;
-  const fileUri    = media?.file?.attributes?.uri?.url ?? null;
-  const portrait   = fileUri ? `${DRUPAL_BASE_URL}${fileUri}` : null;
-  const portraitAlt = media?.file?.attributes?.filename ?? attr.field_name ?? 'الامين العام';
+  const media = node.field_media_image_resolved;
+  const fileUri = media?.file?.attributes?.uri?.url ?? null;
+  const portrait = fileUri ? `${DRUPAL_BASE_URL}${fileUri}` : null;
+  const portraitAlt =
+    media?.file?.attributes?.filename ?? attr.field_name ?? 'رئيس الهيئة الإدارية';
 
-  // ── Bio list items (strip HTML, extract <li> text) ────────────────────────
   const bodyHtml = attr.body?.processed ?? attr.body?.value ?? '';
   const bioItems = (() => {
     if (!bodyHtml) return [];
-    const doc   = new DOMParser().parseFromString(bodyHtml, 'text/html');
+    const doc = new DOMParser().parseFromString(bodyHtml, 'text/html');
     const items = Array.from(doc.querySelectorAll('li'));
     return items.map((li) => li.textContent.trim()).filter(Boolean);
   })();
 
   return {
-    id:          node.id,
-    name:        attr.field_name     ?? '',
-    role:        attr.field_position ?? '',
-    heading:     attr.title          ?? attr.field_name ?? '',
+    id: node.id,
+    name: attr.field_name ?? '',
+    role: attr.field_position ?? '',
+    heading: attr.title ?? attr.field_name ?? '',
     portrait,
     portraitAlt,
     bioItems,
-    bodyHtml,   // kept as fallback for non-list bodies
+    bodyHtml,
   };
 };
 
-// ─── Loading skeleton ─────────────────────────────────────────────────────────
-
-function DirectorSkeleton() {
+function ChairmanSkeleton() {
   return (
     <div className="container mx-auto px-4 py-20 animate-pulse">
       <div className="grid items-start gap-12 lg:grid-cols-12">
@@ -76,60 +65,48 @@ function DirectorSkeleton() {
   );
 }
 
-// ─── Component ────────────────────────────────────────────────────────────────
-
-/**
- * Fetches the first published `secretary_general_s_speech` node and renders
- * the secretary-general's portrait + bio card.
- *
- * @param {string} [fallbackPortrait] - Shown while loading or if no image is returned.
- */
-export function DirectorWordSection({ fallbackPortrait = '/logo.png' }) {
-  const [director, setDirector] = useState(null);
-  const [loading, setLoading]   = useState(true);
-  const [error, setError]       = useState(null);
+export function ChairmanWordSection({ fallbackPortrait = '/logo.png' }) {
+  const [chairman, setChairman] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
 
     const load = async () => {
       try {
-        const nodes = await getNodes('secretary_general_s_speech', DIRECTOR_IMAGE_FIELDS);
+        const nodes = await getNodes('chairman_s_speech', CHAIRMAN_IMAGE_FIELDS);
         if (cancelled) return;
 
         const published = nodes.filter((n) => n.attributes.status);
-        if (published.length) setDirector(transformDirectorNode(published[0]));
+        if (published.length) setChairman(transformChairmanNode(published[0]));
       } catch (err) {
-        if (!cancelled) {
-          console.error('DirectorWordSection: failed to load data', err);
-          setError(err);
-        }
+        if (!cancelled) console.error('ChairmanWordSection: failed to load data', err);
       } finally {
         if (!cancelled) setLoading(false);
       }
     };
 
     load();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
-  if (loading) return <DirectorSkeleton />;
+  if (loading) return <ChairmanSkeleton />;
 
-  // On error or no data the section still renders with whatever we have
   const {
-    name        = '',
-    role        = '',
-    heading     = '',
-    portrait    = null,
-    portraitAlt = 'الامين العام',
-    bioItems    = [],
-    bodyHtml    = '',
-  } = director ?? {};
+    name = '',
+    role = '',
+    heading = '',
+    portrait = null,
+    portraitAlt = 'رئيس الهيئة الإدارية',
+    bioItems = [],
+    bodyHtml = '',
+  } = chairman ?? {};
 
   return (
     <div className="container mx-auto px-4 py-20">
       <div className="grid items-start gap-12 lg:grid-cols-12" data-aos="fade-up">
-
         <LeaderPortraitCard
           portrait={portrait}
           portraitAlt={portraitAlt}
@@ -138,7 +115,6 @@ export function DirectorWordSection({ fallbackPortrait = '/logo.png' }) {
           fallbackPortrait={fallbackPortrait}
         />
 
-        {/* ── Bio card ── */}
         <div className="lg:col-span-7">
           <div className="relative rounded-3xl border border-gray-100 bg-white p-8 shadow-sm md:p-12">
             <Quote
@@ -168,10 +144,9 @@ export function DirectorWordSection({ fallbackPortrait = '/logo.png' }) {
             </div>
           </div>
         </div>
-
       </div>
     </div>
   );
 }
 
-export default DirectorWordSection;
+export default ChairmanWordSection;

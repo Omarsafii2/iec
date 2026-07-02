@@ -124,8 +124,8 @@ function TopSection({ node }) {
                   {mainText}
                 </p>
               )}
-              {desc1 && <p className="mb-6 leading-relaxed">{desc1}</p>}
-              {desc2 && <p className="leading-relaxed">{desc2}</p>}
+              {desc1 && <p className="mb-8 border-b border-gray-100 pb-8 text-xl leading-loose font-bold text-[#564636]">{desc1}</p>}
+              {desc2 && <p className="mb-8 border-b border-gray-100 pb-8 text-xl leading-loose font-bold text-[#564636]">{desc2}</p>}
             </div>
           </div>
 
@@ -159,30 +159,24 @@ function BottomSection({ node }) {
     .map((el) => el.textContent.trim())
     .filter(Boolean);
 
-  // Split paragraphs by classification
-  const visionPara  = node.paragraphs.find((p) => p.classification === 'vision');
-  const messagePara = node.paragraphs.find((p) => p.classification === 'our_message');
-  const factsPara   = node.paragraphs.find((p) => p.classification === 'facts');
+  // Paragraphs for value cards — every item except "facts" (facts stays on the image overlay)
+  const factsPara = node.paragraphs.find((p) => p.classification === 'facts');
+  const valueParagraphs = node.paragraphs.filter((p) => p.classification !== 'facts');
 
-  // Map to Card variant props
-  const valueCards = [
-    visionPara && {
-      title:       visionPara.title,
-      description: visionPara.bodyText,
-      icon:        visionPara.iconUrl
-        ? <img src={visionPara.iconUrl} alt="" className="size-6 object-contain" aria-hidden />
-        : <Target size={24} strokeWidth={2} aria-hidden className="transition-colors group-hover:text-white" />,
-      variant: 'history-vision',
-    },
-    messagePara && {
-      title:       messagePara.title,
-      description: messagePara.bodyText,
-      icon:        messagePara.iconUrl
-        ? <img src={messagePara.iconUrl} alt="" className="size-6 object-contain" aria-hidden />
-        : <BookOpen size={24} strokeWidth={2} aria-hidden className="transition-colors group-hover:text-white" />,
-      variant: 'history-mission',
-    },
-  ].filter(Boolean);
+  const valueCards = valueParagraphs.map((p, i) => ({
+    key:         p.id,
+    title:       p.title,
+    description: p.bodyText,
+    icon:
+      p.iconUrl ? (
+        <img src={p.iconUrl} alt="" className="size-6 object-contain" aria-hidden />
+      ) : i % 2 === 0 ? (
+        <Target size={24} strokeWidth={2} aria-hidden className="transition-colors group-hover:text-white" />
+      ) : (
+        <BookOpen size={24} strokeWidth={2} aria-hidden className="transition-colors group-hover:text-white" />
+      ),
+    variant: i % 2 === 0 ? 'history-vision' : 'history-mission',
+  }));
 
   return (
     <div className="mx-auto max-w-7xl">
@@ -207,9 +201,9 @@ function BottomSection({ node }) {
           </div>
 
           {valueCards.length > 0 && (
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
               {valueCards.map((card) => (
-                <Card key={card.title} {...card} />
+                <Card key={card.key} title={card.title} description={card.description} icon={card.icon} variant={card.variant} />
               ))}
             </div>
           )}
@@ -218,7 +212,7 @@ function BottomSection({ node }) {
         {/* Right — images + facts badge */}
         <div className="relative order-1 hidden min-h-[600px] h-full md:block lg:order-2" data-aos="fade-up">
           <div
-            className="absolute top-10 left-10 right-0 bottom-0 -z-10 translate-x-4 translate-y-4 rounded-3xl border-2 border-[#897D56]/20"
+            className="absolute top-10 left-10 right-0 bottom-0 -z-10 translate-x-4 translate-y-4 rounded-3xl "
             aria-hidden
           />
 
@@ -267,7 +261,7 @@ function BottomSection({ node }) {
 
         {/* Mobile image fallback */}
         {node.image && (
-          <div className="order-1 mb-8 md:hidden" data-aos="fade-up">
+          <div className="order-1 mb-8 md:hidden border-2 border-[#897D56]/20 rounded-3xl p-2" data-aos="fade-up">
             <img
               src={node.image}
               alt="نشاطات النادي"

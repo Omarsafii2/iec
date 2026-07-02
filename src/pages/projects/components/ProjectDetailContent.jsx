@@ -39,7 +39,7 @@ export function ProjectDetailContent({ project }) {
           <div className="iec-project-detail__grid grid gap-12 p-8 md:grid-cols-12 md:p-12">
             <div className="iec-project-detail__main md:col-span-8">
               <h2 className="iec-project-detail__section-title mb-6 border-e-4 border-[#897D56] pe-4 text-2xl font-bold text-[#564636]">
-                تفاصيل المشروع
+              {project.title}
               </h2>
               <div className="iec-project-detail__body max-w-none leading-relaxed text-gray-600">
                 <p className="iec-project-detail__lead mb-6 text-xl font-medium text-gray-800">{project.lead}</p>
