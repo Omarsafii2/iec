@@ -15,8 +15,6 @@ import {
   Target,
   BookOpen,
   Award,
-  Image,
-  Video,
   Newspaper,
 } from 'lucide-react';
 
@@ -36,6 +34,16 @@ const megaMenuPanel =
 
 const nestedFlyoutPanel =
   'absolute top-0 start-full z-[110] w-56 ps-2 opacity-0 invisible pointer-events-none transition-all duration-150 ease-out group-hover/nested:opacity-100 group-hover/nested:visible group-hover/nested:pointer-events-auto group-focus-within/nested:opacity-100 group-focus-within/nested:visible group-focus-within/nested:pointer-events-auto';
+
+const NEWS_MENU_ICONS = {
+  initiatives: '/icons/news/handshake.png',
+  events: '/icons/news/event.png',
+  activities: '/icons/news/microphone.png',
+};
+
+function NewsSubmenuIcon({ src, className = 'size-[18px] shrink-0 object-contain' }) {
+  return <img src={src} alt="" aria-hidden className={className} />;
+}
 
 export function Header() {
   const [mobileMounted, setMobileMounted] = useState(false);
@@ -279,15 +287,15 @@ export function Header() {
                     <div className="absolute start-0 top-0 h-1 w-full rounded-t-xl bg-[#897D56]" />
                     <div className="rounded-b-xl bg-white p-2">
                       <Link className={submenuItemClass} to="/news/initiatives" role="menuitem">
-                        <Image className="size-[18px] shrink-0 text-[#897D56]" strokeWidth={2} aria-hidden />
+                        <NewsSubmenuIcon src={NEWS_MENU_ICONS.initiatives} />
                         المبادرات
                       </Link>
                       <Link className={submenuItemClass} to="/news/events" role="menuitem">
-                        <Video className="size-[18px] shrink-0 text-[#897D56]" strokeWidth={2} aria-hidden />
+                        <NewsSubmenuIcon src={NEWS_MENU_ICONS.events} />
                         الفعاليات
                       </Link>
                       <Link className={submenuItemClass} to="/news/activities" role="menuitem">
-                        <Newspaper className="size-[18px] shrink-0 text-[#897D56]" strokeWidth={2} aria-hidden />
+                        <NewsSubmenuIcon src={NEWS_MENU_ICONS.activities} />
                         IEC Talks
                       </Link>
                     </div>
@@ -567,7 +575,7 @@ export function Header() {
                         onClick={closeMobileMenu}
                         className="flex min-h-11 items-center gap-2 rounded-lg px-3 text-[15px] font-semibold text-[#564636]/95 transition-colors hover:bg-[#897D56]/10"
                       >
-                        <Image className="size-4 shrink-0 text-[#897D56]" strokeWidth={2} aria-hidden />
+                        <NewsSubmenuIcon src={NEWS_MENU_ICONS.initiatives} className="size-4 shrink-0 object-contain" />
                         المبادرات
                       </Link>
                       <Link
@@ -575,7 +583,7 @@ export function Header() {
                         onClick={closeMobileMenu}
                         className="flex min-h-11 items-center gap-2 rounded-lg px-3 text-[15px] font-semibold text-[#564636]/95 transition-colors hover:bg-[#897D56]/10"
                       >
-                        <Video className="size-4 shrink-0 text-[#897D56]" strokeWidth={2} aria-hidden />
+                        <NewsSubmenuIcon src={NEWS_MENU_ICONS.events} className="size-4 shrink-0 object-contain" />
                         الفعاليات
                       </Link>
                       <Link
@@ -583,7 +591,7 @@ export function Header() {
                         onClick={closeMobileMenu}
                         className="flex min-h-11 items-center gap-2 rounded-lg px-3 text-[15px] font-semibold text-[#564636]/95 transition-colors hover:bg-[#897D56]/10"
                       >
-                        <Newspaper className="size-4 shrink-0 text-[#897D56]" strokeWidth={2} aria-hidden />
+                        <NewsSubmenuIcon src={NEWS_MENU_ICONS.activities} className="size-4 shrink-0 object-contain" />
                         الأنشطة
                       </Link>
                     </div>
