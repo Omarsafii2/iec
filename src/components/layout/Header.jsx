@@ -1,6 +1,9 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useHeaderScroll } from '../../hooks/useHeaderScroll.js';
+import initiativesIcon from '../../../assets/images/mobadrat.svg';
+import eventsIcon from '../../../assets/images/faliat.png';
+import iecTalksIcon from '../../../assets/images/iec talks.png';
 import {
   ChevronDown,
   ChevronLeft,
@@ -18,6 +21,9 @@ import {
   Newspaper,
 } from 'lucide-react';
 
+const newsSubmenuIconClass = 'size-[18px] shrink-0 object-contain';
+const newsSubmenuIconClassMobile = 'size-4 shrink-0 object-contain';
+
 const navClassHero =
   'flex items-center gap-1.5 text-[16px] font-bold transition-colors duration-300 text-white hover:text-[#897D56]';
 
@@ -34,16 +40,6 @@ const megaMenuPanel =
 
 const nestedFlyoutPanel =
   'absolute top-0 start-full z-[110] w-56 ps-2 opacity-0 invisible pointer-events-none transition-all duration-150 ease-out group-hover/nested:opacity-100 group-hover/nested:visible group-hover/nested:pointer-events-auto group-focus-within/nested:opacity-100 group-focus-within/nested:visible group-focus-within/nested:pointer-events-auto';
-
-const NEWS_MENU_ICONS = {
-  initiatives: '/icons/news/handshake.png',
-  events: '/icons/news/event.png',
-  activities: '/icons/news/microphone.png',
-};
-
-function NewsSubmenuIcon({ src, className = 'size-[18px] shrink-0 object-contain' }) {
-  return <img src={src} alt="" aria-hidden className={className} />;
-}
 
 export function Header() {
   const [mobileMounted, setMobileMounted] = useState(false);
@@ -123,48 +119,47 @@ export function Header() {
       <header
         className={`fixed w-full transition-all duration-500 ${
           solid
-            ? 'top-0 z-50 border-b border-gray-100 bg-white/95 py-2 shadow-lg backdrop-blur-md'
-            : 'top-14 z-[62] border-b border-transparent bg-transparent py-2'
+            ? 'top-0 z-50 border-b border-gray-100 bg-white/95 py-1.5 shadow-lg backdrop-blur-md'
+            : 'top-14 z-[62] border-b border-transparent bg-transparent py-1.5'
         }`}
         dir="rtl"
         lang="ar"
       >
-        <div className="container mx-auto flex items-center justify-between px-4">
-          <div className="z-50 flex items-center gap-4">
-            <Link className="group flex min-w-0 max-w-full items-center gap-2 sm:gap-3" to="/">
+        <div className="container mx-auto flex items-center justify-between px-3 md:px-4">
+          <div className="z-50 flex min-w-0 items-center gap-2 md:gap-3">
+            <Link className="group flex min-w-0 max-w-full items-center gap-1.5 sm:gap-2" to="/">
  
                 <img
                   src="/logo.png"
                   alt="IECA Alumni Club Logo"
                   className={`object-contain transition-all duration-500 drop-shadow-lg ${
-                    solid ? 'h-16 w-16 md:h-28 md:w-28' : 'h-20 w-20 md:h-[130px] md:w-[130px]'
+                    solid ? 'h-12 w-12 md:h-16 md:w-16' : 'h-14 w-14 md:h-20 md:w-20'
                   }`}
-                  style={{ 
+                  style={{
                     background: 'rgba(255,255,255,0.16)',
                     borderRadius: '50%',
-                    padding: '4px 5px 5px 3px',
+                    padding: '3px 4px 4px 2px',
                     backdropFilter: 'blur(55px)',
-               
-                   }}
+                  }}
                 />
 
-              <div className="flex min-w-0 flex-col font-['Cairo',sans-serif] opacity-100 transition-all duration-500">
+              <div className="flex min-w-0 flex-col gap-0 font-['Cairo',sans-serif] opacity-100 transition-all duration-500">
                 <h1
-                  className={`text-3xl font-extrabold leading-tight tracking-tight drop-shadow-md transition-colors duration-300 sm:text-4xl md:text-[2.35rem] ${
+                  className={`text-xl font-extrabold leading-tight tracking-tight drop-shadow-md transition-colors duration-300 sm:text-2xl md:text-[1.65rem] ${
                     solid ? 'text-[#564636]' : 'text-white'
                   }`}
                 >
-                  نادي خريجي
+                  جمعية نادي الخريجي
                 </h1>
                 <span
-                  className={`mt-1 text-base font-bold leading-snug tracking-normal drop-shadow-sm transition-colors duration-300 sm:text-lg md:text-xl ${
+                  className={`text-sm font-bold leading-snug tracking-normal drop-shadow-sm transition-colors duration-300 sm:text-base md:text-lg ${
                     solid ? 'text-[#897D56]' : 'text-gray-200'
                   }`}
                 >
                   الكلية العلمية الإسلامية
                 </span>
                 <span
-                  className={`mt-1 text-xs font-semibold leading-snug tracking-normal drop-shadow-sm transition-colors duration-300 sm:text-sm md:text-base ${
+                  className={`text-[11px] font-semibold leading-snug tracking-normal drop-shadow-sm transition-colors duration-300 sm:text-xs md:text-sm ${
                     solid ? 'text-[#564636]' : 'text-gray-200'
                   }`}
                 >
@@ -174,7 +169,7 @@ export function Header() {
             </Link>
           </div>
 
-          <div className="flex items-center gap-2 xl:gap-8">
+          <div className="flex shrink-0 items-center gap-1.5 xl:gap-4">
             <nav className="hidden items-center gap-0 xl:gap-1 lg:flex" aria-label="التنقل الرئيسي">
               <div className={navItemWrapClass}>
                 <Link className={navClass} to="/">
@@ -287,15 +282,15 @@ export function Header() {
                     <div className="absolute start-0 top-0 h-1 w-full rounded-t-xl bg-[#897D56]" />
                     <div className="rounded-b-xl bg-white p-2">
                       <Link className={submenuItemClass} to="/news/initiatives" role="menuitem">
-                        <NewsSubmenuIcon src={NEWS_MENU_ICONS.initiatives} />
+                        <img src={initiativesIcon} alt="" className={newsSubmenuIconClass} aria-hidden />
                         المبادرات
                       </Link>
                       <Link className={submenuItemClass} to="/news/events" role="menuitem">
-                        <NewsSubmenuIcon src={NEWS_MENU_ICONS.events} />
+                        <img src={eventsIcon} alt="" className={newsSubmenuIconClass} aria-hidden />
                         الفعاليات
                       </Link>
                       <Link className={submenuItemClass} to="/news/activities" role="menuitem">
-                        <NewsSubmenuIcon src={NEWS_MENU_ICONS.activities} />
+                        <img src={iecTalksIcon} alt="" className={newsSubmenuIconClass} aria-hidden />
                         IEC Talks
                       </Link>
                     </div>
@@ -575,7 +570,7 @@ export function Header() {
                         onClick={closeMobileMenu}
                         className="flex min-h-11 items-center gap-2 rounded-lg px-3 text-[15px] font-semibold text-[#564636]/95 transition-colors hover:bg-[#897D56]/10"
                       >
-                        <NewsSubmenuIcon src={NEWS_MENU_ICONS.initiatives} className="size-4 shrink-0 object-contain" />
+                        <img src={initiativesIcon} alt="" className={newsSubmenuIconClassMobile} aria-hidden />
                         المبادرات
                       </Link>
                       <Link
@@ -583,7 +578,7 @@ export function Header() {
                         onClick={closeMobileMenu}
                         className="flex min-h-11 items-center gap-2 rounded-lg px-3 text-[15px] font-semibold text-[#564636]/95 transition-colors hover:bg-[#897D56]/10"
                       >
-                        <NewsSubmenuIcon src={NEWS_MENU_ICONS.events} className="size-4 shrink-0 object-contain" />
+                        <img src={eventsIcon} alt="" className={newsSubmenuIconClassMobile} aria-hidden />
                         الفعاليات
                       </Link>
                       <Link
@@ -591,7 +586,7 @@ export function Header() {
                         onClick={closeMobileMenu}
                         className="flex min-h-11 items-center gap-2 rounded-lg px-3 text-[15px] font-semibold text-[#564636]/95 transition-colors hover:bg-[#897D56]/10"
                       >
-                        <NewsSubmenuIcon src={NEWS_MENU_ICONS.activities} className="size-4 shrink-0 object-contain" />
+                        <img src={iecTalksIcon} alt="" className={newsSubmenuIconClassMobile} aria-hidden />
                         الأنشطة
                       </Link>
                     </div>

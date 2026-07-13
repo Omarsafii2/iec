@@ -101,8 +101,8 @@ export default function ProjectsListPage() {
   return (
     <main className="iec-page iec-page--projects-list min-h-screen bg-gray-50 pt-[140px]">
       <InnerPageHero
-        title="مشاريع النادي"
-        breadcrumbs={[{ label: 'المشاريع' }]}
+        title="الأذرع المحركة في نادي الخريجين"
+        breadcrumbs={[{ label: 'الأذرع المحركة' }]}
       />
       <div className="container mx-auto px-4 py-16">
         <div className="mb-10 flex justify-end">
