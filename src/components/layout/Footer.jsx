@@ -212,7 +212,7 @@ export function Footer() {
 
         <div className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-gray-800 pt-5 md:flex-row">
           <p className="text-sm text-gray-500">
-            © 2026 نادي خريجي الكلية العلمية الإسلامية. جميع الحقوق محفوظة.
+          تصميم و تطوير شركة الشعاع الازرق لحلول البرمجيات. جميع الحقوق محفوظة © 2026
           </p>
           <div className="flex gap-8 text-sm">
             <Link to="/contact" className="text-gray-500 transition-colors hover:text-[#897D56]">
