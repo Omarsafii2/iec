@@ -247,17 +247,6 @@ export function JoinMembershipSection() {
                   required
                 />
 
-                <TextField
-                  id="join-full-name-en"
-                  name="full_name"
-                  label="Full Name"
-                  placeholder="Full Name"
-                  ltr
-                  value={form.full_name}
-                  onChange={handleChange}
-                  disabled={submitting}
-                />
-
                 <div className="join-membership-form__row join-membership-form__row--4">
                   <TextField
                     id="join-birth-place"
@@ -426,17 +415,6 @@ export function JoinMembershipSection() {
                   onChange={handleChange}
                   disabled={submitting}
                   required
-                />
-
-                <TextField
-                  id="join-email-en"
-                  name="email"
-                  label="Email"
-                  type="email"
-                  ltr
-                  value={form.email}
-                  onChange={handleChange}
-                  disabled={submitting}
                 />
 
                 <div className="join-membership-form__row">

@@ -20,47 +20,54 @@ const SLIDER_IMAGE_FIELDS = [
  *   secondary: { label, to },
  * }
  */
-const transformSlide = (node) => {
-  const attr = node.attributes;
+const DRUPAL_ORIGIN = DRUPAL_BASE_URL.replace(/\/$/, '');
 
-  // ── Image ────────────────────────────────────────────────────────────────
-  // resolved media entity sits at node.field_media_image_resolved
-  const media    = node.field_media_image_resolved;
-  const fileUri  = media?.file?.attributes?.uri?.url ?? null;
-  const imageUrl = fileUri ? `${DRUPAL_BASE_URL}${fileUri}` : null;
-  const imageAlt = media?.file?.attributes?.filename ?? attr.title;
-
-  // ── CTAs ─────────────────────────────────────────────────────────────────
-  const rawPrimary   = attr.field_call_to_action_button;
-  const rawSecondary = attr.field_second_call_to_action_butt;
-
-  const resolveLink = (raw) => {
-    if (!raw?.uri) return null;
-    const isExternal = raw.uri.startsWith('http');
-    const isInternal = raw.uri.startsWith('internal:');
-    const path       = isInternal ? raw.uri.replace('internal:', '') || '/' : raw.uri;
-    return {
-      label:    raw.title || '',
-      ...(isExternal ? { href: raw.uri, external: true } : { to: path }),
-    };
+const resolveLink = (raw) => {
+  if (!raw?.uri) return null;
+  const isExternal = raw.uri.startsWith('http');
+  const isInternal = raw.uri.startsWith('internal:');
+  const path = isInternal ? raw.uri.replace('internal:', '') || '/' : raw.uri;
+  return {
+    label: raw.title || '',
+    ...(isExternal ? { href: raw.uri, external: true } : { to: path }),
   };
+};
 
-  // ── Body / subtitle ───────────────────────────────────────────────────────
+/** One Drupal slider node may expose one or many media images — each becomes a slide. */
+const transformSlides = (node) => {
+  const attr = node.attributes;
+  const mediaResolved = node.field_media_image_resolved;
+  const mediaList = Array.isArray(mediaResolved)
+    ? mediaResolved
+    : mediaResolved
+      ? [mediaResolved]
+      : [];
+
+  const rawPrimary = attr.field_call_to_action_button;
+  const rawSecondary = attr.field_second_call_to_action_butt;
   const subtitle =
     attr.body?.summary ||
     attr.body?.value?.replace(/<[^>]*>/g, '').trim() ||
     '';
 
-  return {
-    id:        node.id,
-    image:     imageUrl,
-    alt:       imageAlt,
-    title:     attr.title,
-    subtitle,
-    badge:     attr.field_tag || undefined,
-    primary:   resolveLink(rawPrimary),
-    secondary: resolveLink(rawSecondary),
-  };
+  return mediaList
+    .map((media, mediaIndex) => {
+      const fileUri = media?.file?.attributes?.uri?.url ?? null;
+      const imageUrl = fileUri ? `${DRUPAL_ORIGIN}${fileUri}` : null;
+      if (!imageUrl) return null;
+
+      return {
+        id: `${node.id}-${mediaIndex}`,
+        image: imageUrl,
+        alt: media?.file?.attributes?.filename ?? attr.title,
+        title: attr.title,
+        subtitle,
+        badge: attr.field_tag || undefined,
+        primary: resolveLink(rawPrimary),
+        secondary: resolveLink(rawSecondary),
+      };
+    })
+    .filter(Boolean);
 };
 
 export function HeroSlider(props) {
@@ -73,13 +80,12 @@ export function HeroSlider(props) {
 
     const load = async () => {
       try {
-        const nodes = await getNodes('slider', SLIDER_IMAGE_FIELDS);
+        const nodes = await getNodes('slider', SLIDER_IMAGE_FIELDS, {}, { 'page[limit]': 50 });
         if (cancelled) return;
 
         const transformed = nodes
-          .filter((n) => n.attributes.status)          // published only
-          .map(transformSlide)
-          .filter((s) => s.image);                     // skip slides with no image
+          .filter((n) => n.attributes.status)
+          .flatMap(transformSlides);
 
         setSlides(transformed);
       } catch (err) {

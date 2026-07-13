@@ -33,7 +33,8 @@ const NEWS_IMAGE_FIELDS = [
 ];
 
 // Taxonomy UUIDs
-const ACADEMIC_TERM_UUID = 'fc986f47-15ec-4496-95a1-c65e4c2d9cb0';
+const ACADEMIC_TERM_UUID   = 'fc986f47-15ec-4496-95a1-c65e4c2d9cb0';
+const NETWORKING_TERM_UUID = 'f7d9156f-562a-48b9-84c6-866957cb01b9';
 
 // ─── 2. Helpers ───────────────────────────────────────────────────────────────
 
@@ -93,9 +94,17 @@ const transformAcademy = (node) => {
   const typeTerm = node.field_type_resolved;
   const typeName = typeTerm?.attributes?.name ?? '';
 
-  const activitiesLabel = typeName === 'Academic' || typeId === ACADEMIC_TERM_UUID
-    ? 'الدورات والأنشطة'
-    : 'الفعاليات والمبادرات';
+  const isAcademic = typeName === 'Academic' || typeId === ACADEMIC_TERM_UUID;
+  const isNetwork  = typeName === 'Networking' || typeId === NETWORKING_TERM_UUID;
+  const title      = attr.title ?? '';
+
+  const activitiesLabel = isAcademic
+    ? 'الدورات'
+    : isNetwork
+      ? 'شركاؤنا'
+      : title.includes('شبكة')
+        ? 'شركاؤنا'
+        : 'الدورات';
 
   const activities = (node.field_courses_and_events_resolved ?? []).map((p) => {
     const image = resolveFieldImageUrl(p.field_image_resolved);
