@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useHeaderScroll } from '../../hooks/useHeaderScroll.js';
-import initiativesIcon from '../../../assets/images/mobadrat.svg';
-import eventsIcon from '../../../assets/images/faliat.png';
-import iecTalksIcon from '../../../assets/images/iec talks.png';
+import initiativesIcon from '../../../assets/images/mobadrat2.svg';
+import eventsIcon from '../../../assets/images/faaailiat2.svg';
+import iecTalksIcon from '../../../assets/images/iec-talks2.svg';
 import {
   ChevronDown,
   ChevronLeft,
