@@ -16,7 +16,7 @@ const SITE_PAGES = [
   { title: 'حجز القاعات', path: '/services/reservations', badge: 'خدمة', description: 'حجز مرافق وقاعات النادي للمناسبات والفعاليات.' },
   { title: 'المبادرات', path: '/news/initiatives', badge: 'نشرة', description: 'مبادرات النادي وبرامجه المجتمعية.' },
   { title: 'الفعاليات', path: '/news/events', badge: 'نشرة', description: 'فعاليات ومناسبات النادي.' },
-  { title: 'الأنشطة', path: '/news/activities', badge: 'نشرة', description: 'أنشطة النادي وتحديثاته.' },
+  { title: 'IEC Talks', path: '/news/activities', badge: 'نشرة', description: 'أنشطة النادي وتحديثاته.' },
   { title: 'المشاريع', path: '/projects', badge: 'مشروع', description: 'تعرف على مشاريع النادي ومبادراته المجتمعية.' },
   { title: 'اتصل بنا', path: '/contact', badge: 'تواصل', description: 'طرق التواصل مع النادي ومعلومات الاتصال.' },
   { title: 'الأسئلة الشائعة', path: '/faq', badge: 'مساعدة', description: 'إجابات عن أكثر الأسئلة شيوعًا حول النادي وخدماته.' },
