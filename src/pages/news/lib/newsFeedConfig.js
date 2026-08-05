@@ -32,9 +32,9 @@ export const NEWS_FEEDS = {
   activities: {
     key: 'activities',
     classification: 'activities',
-    title: 'الأنشطة',
+    title: 'IEC Talks',
     listPath: '/news/activities',
-    backLabel: 'العودة للأنشطة',
+    backLabel: 'العودة إلى IEC Talks',
   },
 };
 

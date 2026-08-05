@@ -587,7 +587,7 @@ export function Header() {
                         className="flex min-h-11 items-center gap-2 rounded-lg px-3 text-[15px] font-semibold text-[#564636]/95 transition-colors hover:bg-[#897D56]/10"
                       >
                         <img src={iecTalksIcon} alt="" className={newsSubmenuIconClassMobile} aria-hidden />
-                        الأنشطة
+                        IEC Talks
                       </Link>
                     </div>
                   </div>

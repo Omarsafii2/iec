@@ -94,7 +94,7 @@ export function Footer() {
                 <FooterNavLink to="/news/events">الفعاليات</FooterNavLink>
               </li>
               <li>
-                <FooterNavLink to="/news/activities">الأنشطة</FooterNavLink>
+                <FooterNavLink to="/news/activities">IEC Talks</FooterNavLink>
               </li>
               <li>
                 <FooterNavLink to="/faq">الأسئلة الشائعة</FooterNavLink>
