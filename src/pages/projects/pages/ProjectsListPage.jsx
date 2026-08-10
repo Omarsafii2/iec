@@ -118,7 +118,13 @@ export default function ProjectsListPage() {
         {loading && <ProjectsListSkeleton />}
 
         {!loading && !error && projects.length > 0 && (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          <div className={`grid gap-6 md:grid-cols-2 ${
+            projects.length >= 5 ? 'lg:grid-cols-5'
+            : projects.length === 4 ? 'lg:grid-cols-4'
+            : projects.length === 3 ? 'lg:grid-cols-3'
+            : projects.length === 2 ? 'lg:grid-cols-2'
+            : 'lg:grid-cols-1'
+          }`}>
             {projects.map((item) => (
               <Card
                 key={item.id}
