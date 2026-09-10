@@ -17,8 +17,7 @@ function SectionTitle({ children, id }) {
 
 /** صفحة تفاصيل أكاديمية / شبكة */
 export function AcademyDetailContent({ academy }) {
-  // activitiesLabel: "الدورات والأنشطة" for Academic, "الفعاليات والمبادرات" for Networking
-  const activitiesLabel = academy.activitiesLabel ?? 'الدورات والأنشطة';
+  const activitiesLabel = academy.activitiesLabel ?? 'الدورات';
 
   return (
     <div className="iec-academy-detail container mx-auto px-4 py-16">
@@ -61,12 +60,15 @@ export function AcademyDetailContent({ academy }) {
           >
             {academy.activities.map((act, i) => (
               <Card
-                key={`${act.title}-${i}`}
+                key={act.id || `${act.title}-${i}`}
                 variant="academyActivity"
                 date={act.date}
                 title={act.title}
+                bodyHtml={act.bodyHtml}
                 location={act.location}
                 phone={act.phone || academy.contactPhone}
+                image={act.image}
+                imageAlt={act.imageAlt}
               />
             ))}
           </div>

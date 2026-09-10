@@ -74,11 +74,38 @@ function HeroPrimaryCta({ primary }) {
       </a>
     );
   }
-  return (
-    <Link to={primary.to} className={HERO_PRIMARY_BTN}>
-      {primary.label}
-    </Link>
-  );
+  if (primary.to) {
+    return (
+      <Link to={primary.to} className={HERO_PRIMARY_BTN}>
+        {primary.label}
+      </Link>
+    );
+  }
+  return null;
+}
+
+function HeroSecondaryCta({ secondary }) {
+  if (!secondary) return null;
+  if (secondary.href) {
+    return (
+      <a
+        href={secondary.href}
+        target={secondary.external ? '_blank' : undefined}
+        rel={secondary.external ? 'noopener noreferrer' : undefined}
+        className={HERO_SECONDARY_BTN}
+      >
+        {secondary.label}
+      </a>
+    );
+  }
+  if (secondary.to) {
+    return (
+      <Link to={secondary.to} className={HERO_SECONDARY_BTN}>
+        {secondary.label}
+      </Link>
+    );
+  }
+  return null;
 }
 
 /**
@@ -111,8 +138,17 @@ function HeroSecondaryCta({ secondary }) {
 }
 
 function SliderHero({ slides: slidesProp, className, sectionClassName }) {
-  const slides = slidesProp?.length ? slidesProp : DEFAULT_HERO_SLIDES;
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, direction: 'rtl', align: 'start' });
+  const slides = useMemo(() => {
+    const list = slidesProp?.length ? slidesProp : DEFAULT_HERO_SLIDES;
+    return list.filter(Boolean);
+  }, [slidesProp]);
+  const canLoop = slides.length > 1;
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    loop: canLoop,
+    direction: 'rtl',
+    align: 'start',
+    watchSlides: true,
+  });
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   const onSelect = useCallback(() => {
@@ -131,19 +167,31 @@ function SliderHero({ slides: slidesProp, className, sectionClassName }) {
     };
   }, [emblaApi, onSelect]);
 
+  useEffect(() => {
+    if (!emblaApi) return;
+    emblaApi.reInit({ loop: canLoop, direction: 'rtl', align: 'start', watchSlides: true });
+  }, [emblaApi, slides, canLoop]);
+
+  useEffect(() => {
+    if (!emblaApi || !canLoop) return;
+    const interval = window.setInterval(() => emblaApi.scrollNext(), 6000);
+    return () => window.clearInterval(interval);
+  }, [emblaApi, canLoop]);
+
   const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
   const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
+  const scrollTo = useCallback((index) => emblaApi?.scrollTo(index), [emblaApi]);
 
   return (
     <section
-      className={`iec-slider iec-slider--hero relative h-[900px] overflow-hidden bg-gray-900 ${sectionClassName || ''}`}
+      className={`iec-slider iec-slider--hero relative h-[100dvh] overflow-hidden bg-gray-900 ${sectionClassName || ''}`}
       dir="rtl"
     >
       <div className={`embla iec-slider__viewport h-full w-full overflow-hidden ${className || ''}`} ref={emblaRef}>
         <div className="iec-slider__container flex h-full w-full touch-pan-y">
           {slides.map((slide, index) => (
             <div
-              key={slide.id}
+              key={slide.id ?? `hero-slide-${index}`}
               className="iec-slider__slide relative h-full min-w-0 flex-[0_0_100%] w-full"
             >
               <div className="absolute inset-0">
@@ -152,14 +200,14 @@ function SliderHero({ slides: slidesProp, className, sectionClassName }) {
                   alt={slide.alt}
                   className="h-full w-full object-cover opacity-60"
                   style={{ objectPosition: 'center 0%' }}
-                  loading={index === 0 ? 'eager' : 'lazy'}
+                  loading="eager"
                   decoding="async"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#564636] via-[#564636]/50 to-transparent" />
+                {/* <div className="absolute inset-0 bg-gradient-to-t from-[#564636] via-[#564636]/50 to-transparent" /> */}
               </div>
-              <div className="relative z-10 container mx-auto flex h-full flex-col items-start justify-center px-8 text-white md:px-24">
+              <div className="relative z-10 container mx-auto flex h-full w-full flex-col items-start justify-center px-8 text-white md:px-24">
                 <div
-                  className={`iec-slider__content max-w-2xl transition-all duration-700 ease-out ${
+                  className={`iec-slider__content max-w-2xl text-right transition-all duration-700 ease-out ${
                     index === selectedIndex ? 'translate-y-0 opacity-100' : 'translate-y-5 opacity-0'
                   }`}
                 >
@@ -168,8 +216,8 @@ function SliderHero({ slides: slidesProp, className, sectionClassName }) {
                       {slide.badge}
                     </div>
                   ) : null}
-                  <h2 className="mb-6 text-5xl font-bold leading-tight md:text-6xl">{slide.title}</h2>
-                  <p className="mb-8 text-xl font-light text-gray-200 md:text-2xl">{slide.subtitle}</p>
+                  <h2 className="mb-6 text-5xl font-bold leading-tight md:text-6xl text-right">{slide.title}</h2>
+                  <p className="mb-8 text-xl font-light text-gray-200 md:text-2xl text-right">{slide.subtitle}</p>
                   <div className="flex flex-wrap gap-4">
                     <HeroPrimaryCta primary={slide.primary} />
                     <HeroSecondaryCta secondary={slide.secondary} />
@@ -181,22 +229,43 @@ function SliderHero({ slides: slidesProp, className, sectionClassName }) {
         </div>
       </div>
 
-      <button
-        type="button"
-        className="iec-slider__nav iec-slider__nav--next absolute left-8 top-1/2 z-20 -translate-y-1/2 rounded-full border border-white/20 bg-white/10 p-2 text-white backdrop-blur-sm transition-all hover:bg-white/20 md:left-16"
-        onClick={scrollNext}
-        aria-label="الشريحة التالية"
-      >
-        <ArrowLeft size={32} strokeWidth={2} />
-      </button>
-      <button
-        type="button"
-        className="iec-slider__nav iec-slider__nav--prev absolute right-8 top-1/2 z-20 -translate-y-1/2 rounded-full border border-white/20 bg-white/10 p-2 text-white backdrop-blur-sm transition-all hover:bg-white/20 md:right-16"
-        onClick={scrollPrev}
-        aria-label="الشريحة السابقة"
-      >
-        <ArrowRight size={32} strokeWidth={2} />
-      </button>
+      {canLoop ? (
+        <div className="iec-slider__dots absolute inset-x-0 bottom-24 z-20 flex justify-center gap-2 px-4">
+          {slides.map((slide, index) => (
+            <button
+              key={`${slide.id}-dot`}
+              type="button"
+              className={`h-2.5 rounded-full transition-all ${
+                index === selectedIndex ? 'w-8 bg-white' : 'w-2.5 bg-white/40 hover:bg-white/70'
+              }`}
+              onClick={() => scrollTo(index)}
+              aria-label={`الانتقال إلى الشريحة ${index + 1}`}
+              aria-current={index === selectedIndex ? 'true' : undefined}
+            />
+          ))}
+        </div>
+      ) : null}
+
+      {canLoop ? (
+        <div className="iec-slider__nav-bar absolute inset-x-0 bottom-8 z-20 flex items-center justify-center gap-4 px-4 md:contents">
+        <button
+          type="button"
+          className="iec-slider__nav iec-slider__nav--next rounded-full border border-white/20 bg-white/10 p-2 text-white backdrop-blur-sm transition-all hover:bg-white/20 md:absolute md:left-8 md:top-1/2 md:-translate-y-1/2 md:left-16"
+          onClick={scrollNext}
+          aria-label="الشريحة التالية"
+        >
+          <ArrowLeft size={32} strokeWidth={2} />
+        </button>
+        <button
+          type="button"
+          className="iec-slider__nav iec-slider__nav--prev rounded-full border border-white/20 bg-white/10 p-2 text-white backdrop-blur-sm transition-all hover:bg-white/20 md:absolute md:right-8 md:top-1/2 md:-translate-y-1/2 md:right-16"
+          onClick={scrollPrev}
+          aria-label="الشريحة السابقة"
+        >
+          <ArrowRight size={32} strokeWidth={2} />
+        </button>
+        </div>
+      ) : null}
     </section>
   );
 }
