@@ -1,6 +1,6 @@
 // src/api/drupal.js  ← create this file ONCE, never touch again
 
-export const DRUPAL_JSONAPI_ORIGIN = "http://backend.iec-new-2026.com.dedi8785.your-server.de";
+export const DRUPAL_JSONAPI_ORIGIN = "https://www.backend.iec-alumni.jo/";
 
 const BASE_URL = DRUPAL_JSONAPI_ORIGIN;
 
