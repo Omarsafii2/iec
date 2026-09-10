@@ -55,6 +55,19 @@ const transformProject = (node) => {
   };
 };
 
+/** lg columns follow item count (capped at 5) so the row fills without leftover gaps. */
+function projectsGridClass(count) {
+  const cols = Math.min(Math.max(count, 1), 5);
+  const lgCols = {
+    1: 'lg:grid-cols-1',
+    2: 'lg:grid-cols-2',
+    3: 'lg:grid-cols-3',
+    4: 'lg:grid-cols-4',
+    5: 'lg:grid-cols-5',
+  }[cols];
+  return `grid gap-6 md:grid-cols-2 ${lgCols}`;
+}
+
 // ─── 3. Skeleton ──────────────────────────────────────────────────────────────
 
 function ProjectsSkeleton() {
@@ -148,7 +161,7 @@ export function ProjectsSection() {
           </Link>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-5">
+        <div className={projectsGridClass(projects.length)}>
           {projects.map((item) => (
             <Card
               key={item.id}
