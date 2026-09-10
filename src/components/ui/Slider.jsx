@@ -54,8 +54,14 @@ const DEFAULT_HERO_SLIDES = [
   },
 ];
 
+/**
+ * Primary CTA — now null-safe. If `primary` is missing/null (e.g. Drupal
+ * node has no value in field_call_to_action_button), render nothing
+ * instead of crashing on primary.href / primary.to.
+ */
 function HeroPrimaryCta({ primary }) {
   if (!primary) return null;
+
   if (primary.href) {
     return (
       <a
@@ -100,6 +106,35 @@ function HeroSecondaryCta({ secondary }) {
     );
   }
   return null;
+}
+
+/**
+ * Secondary CTA — same null-safety as HeroPrimaryCta. Previously this was
+ * inlined directly in SliderHero as:
+ *   <Link to={slide.secondary.to} ...>{slide.secondary.label}</Link>
+ * which threw "Cannot read properties of null (reading 'to')" whenever
+ * a slide's secondary link field was empty in Drupal.
+ */
+function HeroSecondaryCta({ secondary }) {
+  if (!secondary) return null;
+
+  if (secondary.href) {
+    return (
+      <a
+        href={secondary.href}
+        target={secondary.external ? '_blank' : undefined}
+        rel={secondary.external ? 'noopener noreferrer' : undefined}
+        className={HERO_SECONDARY_BTN}
+      >
+        {secondary.label}
+      </a>
+    );
+  }
+  return (
+    <Link to={secondary.to} className={HERO_SECONDARY_BTN}>
+      {secondary.label}
+    </Link>
+  );
 }
 
 function SliderHero({ slides: slidesProp, className, sectionClassName }) {
@@ -184,6 +219,8 @@ function SliderHero({ slides: slidesProp, className, sectionClassName }) {
                   <h2 className="mb-6 text-5xl font-bold leading-tight md:text-6xl text-right">{slide.title}</h2>
                   <p className="mb-8 text-xl font-light text-gray-200 md:text-2xl text-right">{slide.subtitle}</p>
                   <div className="flex flex-wrap gap-4">
+                    <HeroPrimaryCta primary={slide.primary} />
+                    <HeroSecondaryCta secondary={slide.secondary} />
                   </div>
                 </div>
               </div>

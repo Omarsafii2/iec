@@ -19,6 +19,12 @@ const SLIDER_IMAGE_FIELDS = [
  *   primary:   { label, href?, to?, external? },
  *   secondary: { label, to },
  * }
+ *
+ * NOTE: `primary` / `secondary` can legitimately be null if the editor left
+ * those link fields empty in Drupal. Slider.jsx now renders null-safely
+ * (HeroPrimaryCta / HeroSecondaryCta return null when the value is missing),
+ * so this no longer crashes the page — but we also provide sane fallbacks
+ * here so a slide never ends up with zero CTAs.
  */
 const DRUPAL_ORIGIN = DRUPAL_BASE_URL.replace(/\/$/, '');
 
@@ -50,24 +56,21 @@ const transformSlides = (node) => {
     attr.body?.value?.replace(/<[^>]*>/g, '').trim() ||
     '';
 
-  return mediaList
-    .map((media, mediaIndex) => {
-      const fileUri = media?.file?.attributes?.uri?.url ?? null;
-      const imageUrl = fileUri ? `${DRUPAL_ORIGIN}${fileUri}` : null;
-      if (!imageUrl) return null;
-
-      return {
-        id: `${node.id}-${mediaIndex}`,
-        image: imageUrl,
-        alt: media?.file?.attributes?.filename ?? attr.title,
-        title: attr.title,
-        subtitle,
-        badge: attr.field_tag || undefined,
-        primary: resolveLink(rawPrimary),
-        secondary: resolveLink(rawSecondary),
-      };
-    })
-    .filter(Boolean);
+  return {
+    id:        node.id,
+    image:     imageUrl,
+    alt:       imageAlt,
+    title:     attr.title,
+    subtitle,
+    badge:     attr.field_tag || undefined,
+    // Fall back to null if the field is genuinely empty — Slider.jsx now
+    // handles that safely. Uncomment the fallback objects below instead if
+    // you'd rather every slide always show a CTA button.
+    primary:   resolveLink(rawPrimary),
+    secondary: resolveLink(rawSecondary),
+    // primary:   resolveLink(rawPrimary)   || { label: 'اقرأ المزيد', to: '/' },
+    // secondary: resolveLink(rawSecondary) || { label: 'اقرأ المزيد', to: '/about/history' },
+  };
 };
 
 export function HeroSlider(props) {
