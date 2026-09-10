@@ -10,8 +10,8 @@ const Home = () => {
     <main>
       <HeroSlider />
       <NetworksSection />
-      <ProjectsSection />
       <VolunteerHourSection />
+      <ProjectsSection />
       <JoinSection />
       <PartnersSection />
     </main>

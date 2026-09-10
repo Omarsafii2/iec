@@ -213,13 +213,16 @@ export const normalizeDrupalUrl = (url) => {
 
 // ─── GET all nodes ────────────────────────────────────────────────────────────
 
-export const getNodes = async (type, imageFields = [], filters = {}) => {
+export const getNodes = async (type, imageFields = [], filters = {}, extraParams = {}) => {
   const include = buildInclude(imageFields);
 
   const params = {};
   if (include) params.include = include;
   Object.entries(filters).forEach(([key, value]) => {
     params[`filter[${key}]`] = value;
+  });
+  Object.entries(extraParams).forEach(([key, value]) => {
+    params[key] = value;
   });
 
   const { data } = await drupalApi.get(`/jsonapi/node/${type}`, { params });

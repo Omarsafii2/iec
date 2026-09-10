@@ -55,6 +55,19 @@ const transformProject = (node) => {
   };
 };
 
+/** lg columns follow item count (capped at 5) so the row fills without leftover gaps. */
+function projectsGridClass(count) {
+  const cols = Math.min(Math.max(count, 1), 5);
+  const lgCols = {
+    1: 'lg:grid-cols-1',
+    2: 'lg:grid-cols-2',
+    3: 'lg:grid-cols-3',
+    4: 'lg:grid-cols-4',
+    5: 'lg:grid-cols-5',
+  }[cols];
+  return `grid gap-6 md:grid-cols-2 ${lgCols}`;
+}
+
 // ─── 3. Skeleton ──────────────────────────────────────────────────────────────
 
 function ProjectsSkeleton() {
@@ -132,15 +145,11 @@ export function ProjectsSection() {
       <div className="relative z-10 container mx-auto px-4">
         <div className="mb-16 flex flex-col items-end justify-between gap-6 md:flex-row">
           <div className="max-w-2xl">
-            <div className="mb-3 flex items-center gap-2">
+            {/* <div className="mb-3 flex items-center gap-2">
               <span className="h-0.5 w-10 bg-[#897D56]" />
               <span className="text-sm font-medium tracking-wide text-[#897D56]">مبادراتنا</span>
-            </div>
-            <h2 className="mb-4 text-4xl font-bold leading-tight text-[#564636]">مشاريع النادي</h2>
-            <p className="text-lg leading-relaxed text-gray-500">
-              نطوّر مشاريع ريادية تخدم الأعضاء والمجتمع، من المنصات الرقمية إلى المرافق والمتاجر
-              الخيرية، ضمن رؤية واضحة للنمو المستدام.
-            </p>
+            </div> */}
+            <h2 className="mb-4 text-4xl font-bold leading-tight text-[#564636]">الأذرع المحركة في نادي الخريجين</h2>
           </div>
 
           <Link
@@ -152,7 +161,7 @@ export function ProjectsSection() {
           </Link>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <div className={projectsGridClass(projects.length)}>
           {projects.map((item) => (
             <Card
               key={item.id}
